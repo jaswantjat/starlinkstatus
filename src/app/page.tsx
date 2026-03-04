@@ -36,9 +36,8 @@ interface VerificationRow {
 }
 
 /* ─── demo data ─────────────────────────────────────────── */
-const DEMO_ROW: VerificationRow = {
+const DEMO_PASS: VerificationRow = {
   Estado: "APROBADO",
-  Resultado: "Instalación completada con excelente rendimiento.",
   "Puntuación Total": 47,
   "Seguridad Aprobada": true,
   "Evidencia Faltante": "",
@@ -46,8 +45,17 @@ const DEMO_ROW: VerificationRow = {
   "Puntuación: Condición del Sitio": 9,
   "Puntuación: Documentación": 14,
   "Puntuación: Educación": 10,
-  "Resumen de IA":
-    "La instalación cumple con todos los estándares aeroespaciales de Starlink × Eltex. El técnico demostró un excelente dominio del protocolo de montaje, orientación del plato y configuración de red. La documentación fotográfica es completa y la capacitación al cliente fue exhaustiva.",
+};
+
+const DEMO_FAIL: VerificationRow = {
+  Estado: "RECHAZADO",
+  "Puntuación Total": 28,
+  "Seguridad Aprobada": false,
+  "Evidencia Faltante": "Foto del plato montado\nFoto del cableado interior\nFoto del router instalado",
+  "Puntuación: Ejecución": 7,
+  "Puntuación: Condición del Sitio": 5,
+  "Puntuación: Documentación": 9,
+  "Puntuación: Educación": 7,
 };
 
 /* ─── helpers ───────────────────────────────────────────── */
