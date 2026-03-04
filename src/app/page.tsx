@@ -530,14 +530,14 @@ function VerificationInner() {
         const data = await res.json();
         if (!data.found) {
           if (Date.now() - startRef.current > 90000) {
-            clearInterval(pollRef.current!);
-            clearInterval(msgRef.current!);
-            setAppState("error");
+              clearInterval(pollRef.current!);
+              clearInterval(tickRef.current!);
+              setAppState("error");
+            }
+            return;
           }
-          return;
-        }
-        clearInterval(pollRef.current!);
-        clearInterval(msgRef.current!);
+          clearInterval(pollRef.current!);
+          clearInterval(tickRef.current!);
         setResultRow(data.row);
         setEditUrl(editUrlParam ?? data.editUrl ?? null);
         setTimeout(() => {
