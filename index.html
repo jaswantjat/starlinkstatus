@@ -754,7 +754,7 @@
 
         // 1️⃣ Check Table 814 for the AI result (filter by linked row_id)
         const r814 = await fetch(
-          `${BASEROW}/table/814/?user_field_names=true&filter__field_8388__link_row_has=${rowId}&size=1`,
+          `${BASEROW}/table/814/?user_field_names=true&filter__field_8388__link_row_has=${rowId}&order_by=-id&size=1`,
           { headers: hdrs }
         );
         const d814 = await r814.json();
