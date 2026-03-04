@@ -201,26 +201,33 @@ function LoadingView({ elapsed }: { elapsed: number }) {
   );
 }
 
-/* ─── fix steps for fail / risk ─────────────────────────── */
+/* ─── fix steps: parse AI summary ACCIONES REQUERIDAS ───── */
 function buildFixSteps(
   g: Grade,
   safetyFail: boolean,
   missing: string[],
-  subScores: { label: string; val: number; max: number }[]
+  subScores: { label: string; val: number; max: number }[],
+  aiSummary?: string
 ): string[] {
+  // 1. Try to extract numbered steps from AI summary
+  if (aiSummary) {
+    const accionesMatch = aiSummary.match(/ACCIONES REQUERIDAS[:\s]*([\s\S]*)/i);
+    if (accionesMatch) {
+      const raw = accionesMatch[1];
+      // Match "1. ...", "2. ...", etc.
+      const parsed = [...raw.matchAll(/\d+\.\s+([^\d]+?)(?=\d+\.|$)/g)]
+        .map((m) => m[1].replace(/\n/g, " ").trim())
+        .filter(Boolean);
+      if (parsed.length > 0) return parsed;
+    }
+  }
+
+  // 2. Fallback: build from structured fields
   const steps: string[] = [];
-
-  if (safetyFail) {
-    steps.push("Corrige el problema de seguridad detectado antes de continuar.");
-  }
-
-  if (missing.length > 0) {
-    missing.forEach((m) => steps.push(`Sube la foto faltante: ${m}`));
-  }
-
+  if (safetyFail) steps.push("Corrige el problema de seguridad detectado antes de continuar.");
+  missing.forEach((m) => steps.push(`Sube la evidencia faltante: ${m}`));
   subScores.forEach(({ label, val, max }) => {
-    const pct = val / max;
-    if (pct < 0.6) {
+    if (val / max < 0.6) {
       const hints: Record<string, string> = {
         Ejecución: "Revisa el montaje del plato y el ángulo de orientación.",
         Sitio: "Documenta las condiciones del sitio con fotos claras.",
@@ -230,12 +237,10 @@ function buildFixSteps(
       if (hints[label]) steps.push(hints[label]);
     }
   });
-
   if (g === "risk" && steps.length === 0) {
     steps.push("Completa la documentación fotográfica de la instalación.");
     steps.push("Asegúrate de que todas las secciones superen el 60 % de puntuación.");
   }
-
   return steps;
 }
 
