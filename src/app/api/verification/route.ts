@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
   // Query table 814 for the QA result linked to this row_id
   const res = await fetch(
-    `${BASEROW}/table/814/?user_field_names=true&filter__field_8388__link_row_has=${rowId}&order_by=-id&size=1`,
+    `${BASEROW}/table/814/?user_field_names=true&filter__field_8388__link_row_has=${rowId}&size=1`,
     { headers, next: { revalidate: 0 } }
   );
 
