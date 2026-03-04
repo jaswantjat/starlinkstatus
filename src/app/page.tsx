@@ -271,7 +271,8 @@ function ResultView({
     { label: "Formación",     val: Number(row["Puntuación: Educación"] ?? 0),           max: 10 },
   ];
 
-  const fixSteps = g !== "pass" ? buildFixSteps(g, safetyFail, missing, subScores) : [];
+  const aiSummary = row["Resumen IA"] ?? "";
+  const fixSteps = g !== "pass" ? buildFixSteps(g, safetyFail, missing, subScores, aiSummary) : [];
 
   const GradeIcon =
     g === "pass" ? (
