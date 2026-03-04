@@ -4,11 +4,9 @@ import { useEffect, useRef, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
+declare module "react" {
   namespace JSX {
     interface IntrinsicElements {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       "dotlottie-wc": React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
         src?: string;
         autoplay?: boolean | string;
