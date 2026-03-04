@@ -470,7 +470,7 @@ function VerificationInner() {
   const [appState, setAppState] = useState<AppState>("loading");
   const [elapsed, setElapsed] = useState(0);
   const [resultRow, setResultRow] = useState<VerificationRow | null>(null);
-  const [editUrl, setEditUrl] = useState<string | null>(editUrlParam);
+  const [editUrl, setEditUrl] = useState<string | null>(editUrlParam ?? (isDemo ? "#" : null));
   const [barReady, setBarReady] = useState(false);
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
