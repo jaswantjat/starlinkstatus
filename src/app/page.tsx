@@ -123,7 +123,15 @@ const THEME = {
 };
 
 /* ─── loading view ──────────────────────────────────────── */
-function LoadingView({ msgIdx }: { msgIdx: number }) {
+function LoadingView({ elapsed }: { elapsed: number }) {
+  // pick the highest threshold that has passed
+  const msg = [...TIMED_MESSAGES]
+    .reverse()
+    .find(([, t]) => elapsed >= t)?.[0] ?? TIMED_MESSAGES[0][0];
+
+  // which step index are we on (for the dots)
+  const stepIdx = TIMED_MESSAGES.filter(([, t]) => elapsed >= t).length - 1;
+
   return (
     <motion.div
       key="loading"
@@ -133,34 +141,59 @@ function LoadingView({ msgIdx }: { msgIdx: number }) {
       className="flex flex-col items-center gap-8 py-12"
     >
       {/* lottie */}
-      <div className="w-48 h-48">
+      <div className="w-44 h-44">
         <dotlottie-wc
           src="https://lottie.host/897a4194-1cc9-4e83-8185-b1b4540c951f/46f51OeLjq.lottie"
           autoplay="true"
           loop="true"
-          style={{ width: "192px", height: "192px", display: "block" }}
+          style={{ width: "176px", height: "176px", display: "block" }}
         />
       </div>
 
       {/* message */}
-      <div className="h-6 flex items-center justify-center">
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={msgIdx}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.3 }}
-            className="text-sm text-white/50 text-center tracking-wide"
-          >
-            {MESSAGES[msgIdx % MESSAGES.length]}
-          </motion.p>
+      <div className="flex flex-col items-center gap-2">
+        <div className="h-5 flex items-center justify-center overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={msg}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.35 }}
+              className="text-sm text-white/55 text-center"
+            >
+              {msg}
+            </motion.p>
+          </AnimatePresence>
+        </div>
+
+        {/* reassurance after 15s */}
+        <AnimatePresence>
+          {elapsed >= 15 && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-xs text-white/25 text-center"
+            >
+              Esto puede tardar hasta 30 s — por favor no cierres la página
+            </motion.p>
+          )}
         </AnimatePresence>
       </div>
 
-      {/* progress bar */}
-      <div className="w-40 h-px bg-white/8 rounded-full overflow-hidden relative">
-        <div className="absolute inset-0 animate-loading-shuttle bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+      {/* step dots */}
+      <div className="flex gap-1.5 items-center">
+        {TIMED_MESSAGES.map((_, i) => (
+          <div
+            key={i}
+            className="rounded-full transition-all duration-500"
+            style={{
+              width: i === stepIdx ? 16 : 4,
+              height: 4,
+              backgroundColor: i <= stepIdx ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.1)",
+            }}
+          />
+        ))}
       </div>
     </motion.div>
   );
