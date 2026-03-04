@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 const BASEROW = 'https://baserow-production-1daf.up.railway.app/api/database/rows';
 const TOKEN = 'Token ygblMAbPhFxJA2cixOi25nlGmj5DBLYQ';
 

@@ -29,7 +29,7 @@ interface VerificationRow {
   "Puntuación: Condición del Sitio"?: string | number;
   "Puntuación: Documentación"?: string | number;
   "Puntuación: Educación"?: string | number;
-  "Resumen IA"?: string;
+  "Resumen de IA"?: string;
 }
 
 /* ─── demo data ─────────────────────────────────────────── */
@@ -44,17 +44,17 @@ const DEMO_PASS: VerificationRow = {
   "Puntuación: Educación": 10,
 };
 
-  const DEMO_FAIL: VerificationRow = {
-    Estado: "RECHAZADO",
-    "Puntuación Total": 30,
-    "Seguridad Aprobada": true,
-    "Evidencia Faltante": "Foto de instalación de plato\nFoto de cableado interior",
-    "Puntuación: Ejecución": 10,
-    "Puntuación: Condición del Sitio": 5,
-    "Puntuación: Documentación": 10,
-    "Puntuación: Educación": 5,
-    "Resumen IA": "La documentación técnica es insuficiente. ACCIONES REQUERIDAS: 1. Toma una foto clara del plato Starlink ya instalado en su base final. 2. Fotografía el recorrido del cable hacia el interior de la casa. 3. Sube las nuevas evidencias al portal para completar la aprobación.",
-  };
+const DEMO_FAIL: VerificationRow = {
+  Estado: "RECHAZADO",
+  "Puntuación Total": 30,
+  "Seguridad Aprobada": true,
+  "Evidencia Faltante": "Foto de instalación de plato\nFoto de cableado interior",
+  "Puntuación: Ejecución": 10,
+  "Puntuación: Condición del Sitio": 5,
+  "Puntuación: Documentación": 10,
+  "Puntuación: Educación": 5,
+  "Resumen de IA": "La documentación técnica es insuficiente. ACCIONES REQUERIDAS: 1. Toma una foto clara del plato Starlink ya instalado en su base final. 2. Fotografía el recorrido del cable hacia el interior de la casa. 3. Sube las nuevas evidencias al portal para completar la aprobación.",
+};
 
 /* ─── helpers ───────────────────────────────────────────── */
 function gradeOf(score: number, estado: string): Grade {
@@ -87,13 +87,13 @@ function AnimatedScore({ value }: { value: number }) {
 /* ─── loading messages ──────────────────────────────────── */
 // Each entry: [message, show after N seconds]
 const TIMED_MESSAGES: [string, number][] = [
-  ["Conectando con el servidor...",          0],
+  ["Conectando con el servidor...", 0],
   ["Recibiendo datos de la instalación...", 4],
-  ["Analizando fotografías subidas...",      9],
+  ["Analizando fotografías subidas...", 9],
   ["Verificando criterios de seguridad...", 14],
-  ["Calculando puntuación final...",        19],
-  ["Casi listo, finalizando reporte...",    24],
-  ["Completando verificación...",           29],
+  ["Calculando puntuación final...", 19],
+  ["Casi listo, finalizando reporte...", 24],
+  ["Completando verificación...", 29],
 ];
 
 /* ─── theme map ─────────────────────────────────────────── */
@@ -265,13 +265,13 @@ function ResultView({
   const safetyFail = safety === false || safety === "false";
 
   const subScores = [
-    { label: "Ejecución",     val: Number(row["Puntuación: Ejecución"] ?? 0),           max: 15 },
-    { label: "Sitio",         val: Number(row["Puntuación: Condición del Sitio"] ?? 0), max: 10 },
-    { label: "Documentación", val: Number(row["Puntuación: Documentación"] ?? 0),       max: 15 },
-    { label: "Formación",     val: Number(row["Puntuación: Educación"] ?? 0),           max: 10 },
+    { label: "Ejecución", val: Number(row["Puntuación: Ejecución"] ?? 0), max: 15 },
+    { label: "Sitio", val: Number(row["Puntuación: Condición del Sitio"] ?? 0), max: 10 },
+    { label: "Documentación", val: Number(row["Puntuación: Documentación"] ?? 0), max: 15 },
+    { label: "Formación", val: Number(row["Puntuación: Educación"] ?? 0), max: 10 },
   ];
 
-  const aiSummary = row["Resumen IA"] ?? "";
+  const aiSummary = row["Resumen de IA"] ?? row["Resumen IA"] ?? "";
   const fixSteps = g !== "pass" ? buildFixSteps(g, safetyFail, missing, subScores, aiSummary) : [];
 
   const GradeIcon =
@@ -484,14 +484,14 @@ function VerificationInner() {
 
     if (isDemo) {
       const demoRow = demoMode === "fail" ? DEMO_FAIL : DEMO_PASS;
-        const t = setTimeout(() => {
-          clearInterval(tickRef.current!);
-          setResultRow(demoRow);
-          setTimeout(() => {
-            setAppState("result");
-            setTimeout(() => setBarReady(true), 100);
-          }, 400);
-        }, 3200);
+      const t = setTimeout(() => {
+        clearInterval(tickRef.current!);
+        setResultRow(demoRow);
+        setTimeout(() => {
+          setAppState("result");
+          setTimeout(() => setBarReady(true), 100);
+        }, 400);
+      }, 3200);
       return () => { clearTimeout(t); clearInterval(tickRef.current!); };
     }
 
@@ -501,20 +501,20 @@ function VerificationInner() {
         const data = await res.json();
         if (!data.found) {
           if (Date.now() - startRef.current > 90000) {
-              clearInterval(pollRef.current!);
-              clearInterval(tickRef.current!);
-              setAppState("error");
-            }
-            return;
+            clearInterval(pollRef.current!);
+            clearInterval(tickRef.current!);
+            setAppState("error");
           }
-          clearInterval(pollRef.current!);
-          clearInterval(tickRef.current!);
+          return;
+        }
+        clearInterval(pollRef.current!);
+        clearInterval(tickRef.current!);
         setResultRow(data.row);
         setEditUrl(editUrlParam ?? data.editUrl ?? null);
-          setTimeout(() => {
-            setAppState("result");
-            setTimeout(() => setBarReady(true), 100);
-          }, 600);
+        setTimeout(() => {
+          setAppState("result");
+          setTimeout(() => setBarReady(true), 100);
+        }, 600);
       } catch (e) {
         console.warn("poll error:", e);
       }
@@ -522,7 +522,7 @@ function VerificationInner() {
 
     poll();
     pollRef.current = setInterval(poll, 3000);
-      return () => { clearInterval(pollRef.current!); clearInterval(tickRef.current!); };
+    return () => { clearInterval(pollRef.current!); clearInterval(tickRef.current!); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -546,7 +546,7 @@ function VerificationInner() {
       {/* Content */}
       <div className="flex-1 px-4">
         <AnimatePresence mode="wait">
-            {appState === "loading" && <LoadingView key="loading" elapsed={elapsed} />}
+          {appState === "loading" && <LoadingView key="loading" elapsed={elapsed} />}
           {appState === "result" && resultRow && (
             <ResultView key="result" row={resultRow} editUrl={editUrl} barReady={barReady} isDemo={isDemo} />
           )}
