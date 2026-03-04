@@ -473,7 +473,6 @@ function VerificationInner() {
   const [editUrl, setEditUrl] = useState<string | null>(editUrlParam);
   const [barReady, setBarReady] = useState(false);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startRef = useRef(Date.now());
