@@ -1,737 +1,794 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a0f1c" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Resultado de Instalación — Starlink × Eltex</title>
   <meta name="description" content="Resultado de validación de tu formulario de instalación Starlink." />
-
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
 
   <style>
-    /* ============================================================
-       DESIGN TOKENS
-    ============================================================ */
+    /* ── TOKENS ─────────────────────────────────── */
     :root {
-      --c-bg:        #0a0f1c;
-      --c-surface:   #111827;
-      --c-surface2:  #1a2234;
-      --c-border:    #1f2d47;
-      --c-text:      #e2e8f0;
-      --c-muted:     #64748b;
-      --c-brand:     #3b82f6;
-      --c-brand-glow:#1d4ed880;
-      --c-green:     #22c55e;
-      --c-green-bg:  #052e16;
-      --c-green-bdr: #166534;
-      --c-red:       #ef4444;
-      --c-red-bg:    #2d0a0a;
-      --c-red-bdr:   #7f1d1d;
-      --c-amber:     #f59e0b;
-      --c-amber-bg:  #2d1a00;
-      --c-amber-bdr: #78350f;
-      --radius:      16px;
-      --radius-sm:   10px;
+      --bg: #07090f;
+      --s1: #0f1520;
+      --s2: #141e2e;
+      --bdr: #1d2c42;
+      --txt: #e8edf5;
+      --muted: #5a6a84;
+      --brand: #3b82f6;
+      --green: #22c55e;
+      --gbg: #0a2a18;
+      --gbdr: #14532d;
+      --red: #f43f5e;
+      --rbg: #200a12;
+      --rbdr: #7f1d2c;
+      --amber: #f59e0b;
+      --abg: #1f1200;
+      --abdr: #78350f;
+      --r: 18px;
+      --rs: 12px;
     }
 
-    /* ============================================================
-       RESET / BASE
-    ============================================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ── RESET ──────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--c-bg);
-      color: var(--c-text);
+      background: var(--bg);
+      color: var(--txt);
       min-height: 100vh;
+      min-height: 100dvh;
+      /* dynamic viewport on iOS */
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      padding: 24px 16px 40px;
+      padding: env(safe-area-inset-top, 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 40px);
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ============================================================
-       LOGO / HEADER
-    ============================================================ */
+    /* ── LOGO ───────────────────────────────────── */
     .header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 32px;
       width: 100%;
-      max-width: 480px;
-    }
-    .logo-star {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--c-brand), #8b5cf6);
-      border-radius: 10px;
+      max-width: 460px;
       display: flex;
-      align-items: center;
       justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
-    }
-    .logo-text {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--c-text);
-      line-height: 1.3;
-    }
-    .logo-text span {
-      display: block;
-      font-size: 12px;
-      font-weight: 400;
-      color: var(--c-muted);
+      padding: 28px 0 24px;
     }
 
-    /* ============================================================
-       CARD
-    ============================================================ */
+    .logo-img {
+      height: 44px;
+      width: auto;
+      object-fit: contain;
+      filter: brightness(1.05);
+    }
+
+    /* ── CARD ───────────────────────────────────── */
     .card {
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
-      border-radius: var(--radius);
-      padding: 28px 24px;
+      background: var(--s1);
+      border: 1px solid var(--bdr);
+      border-radius: var(--r);
+      padding: 28px 20px;
       width: 100%;
-      max-width: 480px;
+      max-width: 460px;
     }
 
-    /* ============================================================
-       LOADING STATE
-    ============================================================ */
+    @media (max-width: 390px) {
+
+      /* smallest iPhones */
+      .card {
+        padding: 22px 16px;
+        border-radius: 14px;
+      }
+    }
+
+    /* ── LOADING ─────────────────────────────────── */
     #state-loading {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
-      padding: 20px 0;
+      gap: 18px;
     }
+
+    .spinner-wrap {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .spinner-ring {
-      width: 72px;
-      height: 72px;
-      border: 5px solid var(--c-border);
-      border-top-color: var(--c-brand);
+      position: absolute;
+      inset: 0;
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      border: 4px solid var(--bdr);
+      border-top-color: var(--brand);
+      animation: spin 0.9s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .spinner-logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     .loading-title {
-      font-size: 19px;
-      font-weight: 700;
+      font-size: 18px;
+      font-weight: 800;
       text-align: center;
+      line-height: 1.3;
     }
+
     .loading-sub {
-      font-size: 14px;
-      color: var(--c-muted);
+      font-size: 13px;
+      color: var(--muted);
       text-align: center;
-      line-height: 1.6;
+      line-height: 1.65;
     }
-    .loading-steps {
+
+    .steps {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 9px;
       width: 100%;
     }
+
     .step {
       display: flex;
       align-items: center;
       gap: 12px;
-      background: var(--c-surface2);
-      border: 1px solid var(--c-border);
-      border-radius: var(--radius-sm);
-      padding: 12px 14px;
+      background: var(--s2);
+      border: 1px solid var(--bdr);
+      border-radius: var(--rs);
+      padding: 13px 14px;
       font-size: 13px;
-      color: var(--c-muted);
-      transition: color 0.4s, border-color 0.4s;
-    }
-    .step.active {
-      color: var(--c-text);
-      border-color: var(--c-brand);
-    }
-    .step-icon { font-size: 18px; flex-shrink: 0; }
-    .step-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--c-border);
-      flex-shrink: 0;
-      transition: background 0.4s;
-    }
-    .step.active .step-dot { background: var(--c-brand); animation: pulse 1s ease-in-out infinite; }
-    .step.done .step-dot  { background: var(--c-green); animation: none; }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.3; }
+      color: var(--muted);
+      transition: color .3s, border-color .3s;
+      user-select: none;
     }
 
-    /* ============================================================
-       RESULT STATE
-    ============================================================ */
-    #state-result { display: none; flex-direction: column; gap: 20px; }
+    .step.active {
+      color: var(--txt);
+      border-color: var(--brand);
+    }
+
+    .step.done {
+      color: #4ade80;
+      border-color: var(--gbdr);
+    }
+
+    .step-icon {
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .step-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--bdr);
+      flex-shrink: 0;
+      margin-left: auto;
+      transition: background .3s;
+    }
+
+    .step.active .step-dot {
+      background: var(--brand);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    .step.done .step-dot {
+      background: var(--green);
+      animation: none;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .25
+      }
+    }
+
+    /* ── RESULT ──────────────────────────────────── */
+    #state-result {
+      display: none;
+      flex-direction: column;
+      gap: 18px;
+    }
 
     .result-hero {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      padding: 8px 0 4px;
+      padding: 4px 0 2px;
     }
+
     .result-icon {
-      width: 72px;
-      height: 72px;
+      width: 76px;
+      height: 76px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 38px;
+      font-size: 40px;
     }
-    .result-icon.pass { background: var(--c-green-bg); box-shadow: 0 0 30px #22c55e40; }
-    .result-icon.fail { background: var(--c-red-bg);   box-shadow: 0 0 30px #ef444440; }
-    .result-icon.risk { background: var(--c-amber-bg); box-shadow: 0 0 30px #f59e0b40; }
+
+    .result-icon.pass {
+      background: var(--gbg);
+      box-shadow: 0 0 36px #22c55e30;
+    }
+
+    .result-icon.fail {
+      background: var(--rbg);
+      box-shadow: 0 0 36px #f43f5e30;
+    }
+
+    .result-icon.risk {
+      background: var(--abg);
+      box-shadow: 0 0 36px #f59e0b30;
+    }
 
     .result-badge {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 1px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
-      padding: 4px 12px;
+      padding: 5px 14px;
       border-radius: 20px;
+      white-space: nowrap;
     }
-    .result-badge.pass { background: var(--c-green-bg);  color: var(--c-green); border: 1px solid var(--c-green-bdr); }
-    .result-badge.fail { background: var(--c-red-bg);    color: var(--c-red);   border: 1px solid var(--c-red-bdr);  }
-    .result-badge.risk { background: var(--c-amber-bg);  color: var(--c-amber); border: 1px solid var(--c-amber-bdr);}
+
+    .result-badge.pass {
+      background: var(--gbg);
+      color: var(--green);
+      border: 1px solid var(--gbdr);
+    }
+
+    .result-badge.fail {
+      background: var(--rbg);
+      color: var(--red);
+      border: 1px solid var(--rbdr);
+    }
+
+    .result-badge.risk {
+      background: var(--abg);
+      color: var(--amber);
+      border: 1px solid var(--abdr);
+    }
 
     .result-title {
-      font-size: 22px;
-      font-weight: 800;
-      text-align: center;
-    }
-    .result-outcome {
-      font-size: 14px;
-      color: var(--c-muted);
+      font-size: 20px;
+      font-weight: 900;
       text-align: center;
     }
 
-    /* Score bar */
+    .result-outcome {
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Score */
     .score-section {
-      background: var(--c-surface2);
-      border: 1px solid var(--c-border);
-      border-radius: var(--radius-sm);
+      background: var(--s2);
+      border: 1px solid var(--bdr);
+      border-radius: var(--rs);
       padding: 16px;
     }
+
     .score-header {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-bottom: 12px;
+      margin-bottom: 11px;
     }
-    .score-label { font-size: 13px; font-weight: 600; color: var(--c-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .score-number { font-size: 28px; font-weight: 800; }
-    .score-number.pass { color: var(--c-green); }
-    .score-number.fail { color: var(--c-red);   }
-    .score-number.risk { color: var(--c-amber);  }
-    .score-bar-bg {
-      height: 10px;
-      border-radius: 10px;
-      background: var(--c-border);
+
+    .score-lbl {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--muted);
+    }
+
+    .score-num {
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    .score-num.pass {
+      color: var(--green);
+    }
+
+    .score-num.fail {
+      color: var(--red);
+    }
+
+    .score-num.risk {
+      color: var(--amber);
+    }
+
+    .bar-bg {
+      height: 9px;
+      border-radius: 9px;
+      background: var(--bdr);
       overflow: hidden;
       margin-bottom: 14px;
     }
-    .score-bar-fill {
+
+    .bar-fill {
       height: 100%;
-      border-radius: 10px;
-      transition: width 1s ease;
+      border-radius: 9px;
+      width: 0%;
+      transition: width 1.1s cubic-bezier(.4, 0, .2, 1);
     }
-    .score-bar-fill.pass { background: linear-gradient(90deg, #16a34a, var(--c-green)); }
-    .score-bar-fill.fail { background: linear-gradient(90deg, #b91c1c, var(--c-red));   }
-    .score-bar-fill.risk { background: linear-gradient(90deg, #b45309, var(--c-amber)); }
+
+    .bar-fill.pass {
+      background: linear-gradient(90deg, #15803d, var(--green));
+    }
+
+    .bar-fill.fail {
+      background: linear-gradient(90deg, #9f1239, var(--red));
+    }
+
+    .bar-fill.risk {
+      background: linear-gradient(90deg, #92400e, var(--amber));
+    }
 
     .sub-scores {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
-    .sub-score {
-      background: var(--c-bg);
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      padding: 10px;
-    }
-    .sub-score-label { font-size: 11px; color: var(--c-muted); margin-bottom: 4px; }
-    .sub-score-val   { font-size: 16px; font-weight: 700; }
 
-    /* Summary */
-    .summary-section {
-      background: var(--c-surface2);
-      border: 1px solid var(--c-border);
-      border-radius: var(--radius-sm);
-      padding: 16px;
+    .sub-score {
+      background: var(--bg);
+      border: 1px solid var(--bdr);
+      border-radius: 9px;
+      padding: 11px;
     }
-    .summary-title {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--c-muted);
-      margin-bottom: 10px;
+
+    .sub-lbl {
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 4px;
+      line-height: 1.4;
     }
-    .summary-text {
-      font-size: 14px;
-      line-height: 1.75;
-      color: var(--c-text);
-      white-space: pre-line;
+
+    .sub-val {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    /* Safety */
+    .safety-banner {
+      background: var(--rbg);
+      border: 1px solid var(--rbdr);
+      border-radius: var(--rs);
+      padding: 13px 15px;
+      font-size: 13px;
+      color: #fda4af;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      line-height: 1.5;
     }
 
     /* Missing evidence */
     .missing-section {
-      background: var(--c-red-bg);
-      border: 1px solid var(--c-red-bdr);
-      border-radius: var(--radius-sm);
-      padding: 16px;
+      background: var(--rbg);
+      border: 1px solid var(--rbdr);
+      border-radius: var(--rs);
+      padding: 15px;
     }
+
     .missing-title {
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--c-red);
+      letter-spacing: .6px;
+      color: var(--red);
       margin-bottom: 10px;
     }
-    .missing-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+
+    .missing-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
     .missing-list li {
       font-size: 13px;
+      color: #fda4af;
       display: flex;
       gap: 8px;
-      align-items: flex-start;
-      color: #fca5a5;
+      line-height: 1.5;
     }
-    .missing-list li::before { content: "•"; color: var(--c-red); flex-shrink: 0; margin-top: 1px; }
 
-    /* Retry button */
+    .missing-list li::before {
+      content: "•";
+      color: var(--red);
+      flex-shrink: 0;
+    }
+
+    /* Summary */
+    .summary-section {
+      background: var(--s2);
+      border: 1px solid var(--bdr);
+      border-radius: var(--rs);
+      padding: 15px;
+    }
+
+    .summary-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--muted);
+      margin-bottom: 9px;
+    }
+
+    .summary-text {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--txt);
+      white-space: pre-line;
+    }
+
+    /* Retry CTA */
     .retry-btn {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, var(--c-brand), #6366f1);
+      padding: 17px;
+      background: linear-gradient(135deg, #2563eb, var(--brand));
       color: #fff;
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 800;
       text-align: center;
       border: none;
-      border-radius: var(--radius-sm);
+      border-radius: var(--rs);
       cursor: pointer;
       text-decoration: none;
-      transition: opacity 0.2s, transform 0.1s;
-      box-shadow: 0 4px 20px var(--c-brand-glow);
-    }
-    .retry-btn:active { transform: scale(0.98); opacity: 0.85; }
-
-    /* Safety failed banner */
-    .safety-banner {
-      background: var(--c-red-bg);
-      border: 1px solid var(--c-red-bdr);
-      border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      font-size: 13px;
-      color: #fca5a5;
-      display: flex;
-      gap: 10px;
-      align-items: center;
+      box-shadow: 0 4px 24px #3b82f630;
+      -webkit-user-select: none;
+      user-select: none;
+      transition: transform .1s, opacity .15s;
+      min-height: 54px;
+      /* big enough touch target */
     }
 
-    /* ============================================================
-       ERROR STATE
-    ============================================================ */
+    .retry-btn:active {
+      transform: scale(0.97);
+      opacity: .85;
+    }
+
+    /* ── ERROR ───────────────────────────────────── */
     #state-error {
       display: none;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
-      padding: 20px 0;
+      gap: 14px;
+      padding: 16px 0;
       text-align: center;
     }
-    .error-icon { font-size: 52px; }
-    .error-title { font-size: 19px; font-weight: 700; }
-    .error-sub   { font-size: 14px; color: var(--c-muted); line-height: 1.6; }
 
-    /* ============================================================
-       FOOTER
-    ============================================================ */
+    .err-icon {
+      font-size: 50px;
+    }
+
+    .err-title {
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .err-sub {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .err-id {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── FOOTER ──────────────────────────────────── */
     .footer {
-      margin-top: 24px;
-      font-size: 12px;
-      color: var(--c-muted);
+      margin-top: 22px;
+      font-size: 11px;
+      color: var(--muted);
       text-align: center;
+      padding-bottom: env(safe-area-inset-bottom, 0);
     }
 
-    /* ============================================================
-       CONFETTI canvas (pass only)
-    ============================================================ */
+    /* ── CONFETTI ────────────────────────────────── */
     #confetti-canvas {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      inset: 0;
       pointer-events: none;
-      z-index: 100;
+      z-index: 999;
     }
   </style>
 </head>
+
 <body>
 
-<canvas id="confetti-canvas" style="display:none;"></canvas>
+  <canvas id="confetti-canvas" style="display:none;"></canvas>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="logo-star">📡</div>
-  <div class="logo-text">
-    Starlink × Eltex
-    <span>Verificación de Instalación</span>
-  </div>
-</div>
-
-<!-- MAIN CARD -->
-<div class="card">
-
-  <!-- === LOADING STATE === -->
-  <div id="state-loading">
-    <div class="spinner-ring"></div>
-    <div class="loading-title">Analizando tu instalación</div>
-    <div class="loading-sub">Nuestra IA está revisando las fotos de tu formulario.<br/>Esto tarda entre 10 y 30 segundos.</div>
-
-    <div class="loading-steps">
-      <div class="step active" id="step-1">
-        <span class="step-icon">📥</span>
-        <span>Descargando formulario PDF</span>
-        <span class="step-dot" style="margin-left:auto;"></span>
-      </div>
-      <div class="step" id="step-2">
-        <span class="step-icon">🖼️</span>
-        <span>Convirtiendo imágenes</span>
-        <span class="step-dot" style="margin-left:auto;"></span>
-      </div>
-      <div class="step" id="step-3">
-        <span class="step-icon">🤖</span>
-        <span>Revisando con IA (Gemini)</span>
-        <span class="step-dot" style="margin-left:auto;"></span>
-      </div>
-      <div class="step" id="step-4">
-        <span class="step-icon">✅</span>
-        <span>Guardando resultado</span>
-        <span class="step-dot" style="margin-left:auto;"></span>
-      </div>
-    </div>
+  <!-- LOGO -->
+  <div class="header">
+    <img src="https://uploads.onecompiler.io/4454edy2w/4454ed8yh/Starlink-x-Eltex.png" alt="Starlink × Eltex"
+      class="logo-img" onerror="this.style.display='none'" />
   </div>
 
-  <!-- === RESULT STATE === -->
-  <div id="state-result">
-    <div class="result-hero" id="result-hero">
-      <div class="result-icon" id="result-icon"></div>
-      <div class="result-badge" id="result-badge"></div>
-      <div class="result-title" id="result-title"></div>
-      <div class="result-outcome" id="result-outcome"></div>
-    </div>
+  <!-- CARD -->
+  <div class="card">
 
-    <!-- Safety banner (only shown if safety failed) -->
-    <div class="safety-banner" id="safety-banner" style="display:none;">
-      ⚠️ <strong>Riesgo de seguridad detectado.</strong>&nbsp; Esta instalación no puede aprobarse hasta que se corrija.
-    </div>
-
-    <!-- Score -->
-    <div class="score-section">
-      <div class="score-header">
-        <span class="score-label">Puntuación Total</span>
-        <span class="score-number" id="score-number"></span>
+    <!-- LOADING -->
+    <div id="state-loading">
+      <div class="spinner-wrap">
+        <div class="spinner-ring"></div>
+        <img src="https://uploads.onecompiler.io/4454edy2w/4454ed8yh/Starlink-x-Eltex.png" class="spinner-logo" alt=""
+          onerror="this.style.display='none'" />
       </div>
-      <div class="score-bar-bg">
-        <div class="score-bar-fill" id="score-bar" style="width:0%;"></div>
+      <div class="loading-title">Analizando tu instalación</div>
+      <div class="loading-sub">La IA está revisando las fotos de tu formulario.<br />Esto tarda entre 10 y 30 segundos.
       </div>
-      <div class="sub-scores">
-        <div class="sub-score">
-          <div class="sub-score-label">Ejecución (/ 15)</div>
-          <div class="sub-score-val" id="s-exec">—</div>
-        </div>
-        <div class="sub-score">
-          <div class="sub-score-label">Estado del sitio (/ 10)</div>
-          <div class="sub-score-val" id="s-site">—</div>
-        </div>
-        <div class="sub-score">
-          <div class="sub-score-label">Documentación (/ 15)</div>
-          <div class="sub-score-val" id="s-docs">—</div>
-        </div>
-        <div class="sub-score">
-          <div class="sub-score-label">Educación cliente (/ 10)</div>
-          <div class="sub-score-val" id="s-edu">—</div>
-        </div>
+      <div class="steps">
+        <div class="step active" id="step-1"><span class="step-icon">📥</span><span>Descargando formulario
+            PDF</span><span class="step-dot"></span></div>
+        <div class="step" id="step-2"><span class="step-icon">🖼️</span><span>Convirtiendo imágenes</span><span
+            class="step-dot"></span></div>
+        <div class="step" id="step-3"><span class="step-icon">🤖</span><span>Revisando con IA (Gemini)</span><span
+            class="step-dot"></span></div>
+        <div class="step" id="step-4"><span class="step-icon">✅</span><span>Guardando resultado</span><span
+            class="step-dot"></span></div>
       </div>
     </div>
 
-    <!-- Missing evidence list -->
-    <div class="missing-section" id="missing-section" style="display:none;">
-      <div class="missing-title">⚠️ Evidencia faltante</div>
-      <ul class="missing-list" id="missing-list"></ul>
+    <!-- RESULT -->
+    <div id="state-result">
+      <div class="result-hero">
+        <div class="result-icon" id="result-icon"></div>
+        <div class="result-badge" id="result-badge"></div>
+        <div class="result-title" id="result-title"></div>
+        <div class="result-outcome" id="result-outcome"></div>
+      </div>
+
+      <div class="safety-banner" id="safety-banner" style="display:none;">
+        ⚠️&nbsp;&nbsp;<div><strong>Riesgo de seguridad detectado.</strong> Esta instalación no puede aprobarse hasta que
+          se corrija el problema de seguridad.</div>
+      </div>
+
+      <div class="score-section">
+        <div class="score-header">
+          <span class="score-lbl">Puntuación Total</span>
+          <span class="score-num" id="score-num"></span>
+        </div>
+        <div class="bar-bg">
+          <div class="bar-fill" id="bar-fill"></div>
+        </div>
+        <div class="sub-scores">
+          <div class="sub-score">
+            <div class="sub-lbl">Ejecución (/ 15)</div>
+            <div class="sub-val" id="s-exec">—</div>
+          </div>
+          <div class="sub-score">
+            <div class="sub-lbl">Estado del sitio (/ 10)</div>
+            <div class="sub-val" id="s-site">—</div>
+          </div>
+          <div class="sub-score">
+            <div class="sub-lbl">Documentación (/ 15)</div>
+            <div class="sub-val" id="s-docs">—</div>
+          </div>
+          <div class="sub-score">
+            <div class="sub-lbl">Educación cliente (/ 10)</div>
+            <div class="sub-val" id="s-edu">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="missing-section" id="missing-section" style="display:none;">
+        <div class="missing-title">⚠️ Evidencia faltante</div>
+        <ul class="missing-list" id="missing-list"></ul>
+      </div>
+
+      <div class="summary-section">
+        <div class="summary-title">📋 Resumen de la IA</div>
+        <div class="summary-text" id="summary-text"></div>
+      </div>
+
+      <a class="retry-btn" id="retry-btn" style="display:none;" href="#">
+        🔄&nbsp; Corregir y Reenviar
+      </a>
     </div>
 
-    <!-- AI Summary -->
-    <div class="summary-section">
-      <div class="summary-title">📋 Resumen de la IA</div>
-      <div class="summary-text" id="summary-text"></div>
+    <!-- ERROR -->
+    <div id="state-error">
+      <div class="err-icon">⏱️</div>
+      <div class="err-title">Tiempo de espera agotado</div>
+      <div class="err-sub">El análisis está tardando más de lo esperado.<br />Contacta con el equipo técnico de Eltex
+        indicando tu ID de pedido.</div>
+      <div class="err-id" id="err-id"></div>
     </div>
 
-    <!-- Retry button (only shown on fail) -->
-    <a class="retry-btn" id="retry-btn" style="display:none;" href="#">
-      🔄 Corregir y Reenviar
-    </a>
   </div>
 
-  <!-- === ERROR STATE === -->
-  <div id="state-error">
-    <div class="error-icon">⏱️</div>
-    <div class="error-title">Tiempo de espera agotado</div>
-    <div class="error-sub">
-      El análisis está tardando más de lo esperado.<br/>
-      Por favor, contacta con el equipo técnico de Eltex e indica tu pedido.
-    </div>
-    <div id="error-order" style="font-size:14px; color: var(--c-muted);"></div>
-  </div>
+  <div class="footer">Starlink × Eltex · Sistema de Verificación de Instalación</div>
 
-</div>
+  <!-- ── JS ───────────────────────────────────────────── -->
+  <script>
+    const N8N_POLL_URL = 'https://primary-production-903a.up.railway.app/webhook/poll-ai-result';
+    const POLL_INTERVAL = 3000;
+    const MAX_WAIT = 90000;
 
-<!-- FOOTER -->
-<div class="footer">
-  Starlink × Eltex · Sistema Automatizado de QA
-</div>
+    const params = new URLSearchParams(window.location.search);
+    const rowId = params.get('row_id');
 
-<!-- ================================================================
-     JAVASCRIPT — POLLING LOGIC
-================================================================ -->
-<script>
-  // ---------------------------------------------------------------
-  // CONFIG — UPDATE THIS TO YOUR N8N ENDPOINT
-  // ---------------------------------------------------------------
-  const N8N_POLL_URL = 'https://primary-production-903a.up.railway.app/webhook/poll-ai-result';
-  const POLL_INTERVAL_MS = 3000;
-  const MAX_WAIT_MS      = 90000; // 90 seconds before showing error
+    let pollTimer = null, stepTimer = null, startTime = Date.now(), stepIdx = 0;
+    const steps = ['step-1', 'step-2', 'step-3', 'step-4'];
 
-  // ---------------------------------------------------------------
-  // READ URL PARAMS
-  // ---------------------------------------------------------------
-  const params   = new URLSearchParams(window.location.search);
-  const rowId    = params.get('row_id');
-  const custName = params.get('name') || 'Técnico';
-
-  // ---------------------------------------------------------------
-  // HELPERS
-  // ---------------------------------------------------------------
-  let pollTimer   = null;
-  let stepTimer   = null;
-  let startTime   = Date.now();
-  let stepIndex   = 0;
-  const steps     = ['step-1','step-2','step-3','step-4'];
-
-  function advanceStep() {
-    if (stepIndex < steps.length) {
-      const prev = steps[stepIndex - 1];
+    function advanceStep() {
+      const prev = steps[stepIdx - 1];
       if (prev) {
-        document.getElementById(prev).classList.remove('active');
-        document.getElementById(prev).classList.add('done');
-        document.getElementById(prev).querySelector('.step-dot').style.background = 'var(--c-green)';
+        const el = document.getElementById(prev);
+        el.classList.remove('active'); el.classList.add('done');
       }
-      document.getElementById(steps[stepIndex]).classList.add('active');
-      stepIndex++;
+      if (stepIdx < steps.length) {
+        document.getElementById(steps[stepIdx]).classList.add('active');
+        stepIdx++;
+      }
     }
-  }
 
-  function getScoreClass(score) {
-    if (score >= 45) return 'pass';
-    if (score >= 35) return 'risk';
-    return 'fail';
-  }
+    function cls(score, estado) {
+      if ((estado || '').toUpperCase() !== 'APROBADO') return 'fail';
+      return score >= 45 ? 'pass' : 'risk';
+    }
 
-  function showState(id) {
-    ['state-loading','state-result','state-error'].forEach(s => {
-      const el = document.getElementById(s);
-      el.style.display = (s === id) ? 'flex' : 'none';
+    function showState(id) {
+      ['state-loading', 'state-result', 'state-error'].forEach(s => {
+        const el = document.getElementById(s);
+        el.style.display = (s === id) ? 'flex' : 'none';
+      });
+    }
+
+    function renderResult(data) {
+      const r = data.result;
+      const score = Number(r.puntuacion_total) || 0;
+      const c = cls(score, r.estado);
+      const icons = { pass: '✅', risk: '⚠️', fail: '❌' };
+      const labels = { pass: 'Aprobado', risk: 'En Riesgo', fail: 'Rechazado' };
+      const titles = { pass: '¡Instalación validada!', risk: 'Instalación en riesgo', fail: 'Instalación rechazada' };
+
+      document.getElementById('result-icon').textContent = icons[c];
+      document.getElementById('result-icon').className = `result-icon ${c}`;
+      document.getElementById('result-badge').textContent = labels[c];
+      document.getElementById('result-badge').className = `result-badge ${c}`;
+      document.getElementById('result-title').textContent = titles[c];
+      document.getElementById('result-outcome').textContent = r.resultado || '';
+
+      if (r.seguridad === false || r.seguridad === 'false')
+        document.getElementById('safety-banner').style.display = 'flex';
+
+      const sNum = document.getElementById('score-num');
+      sNum.textContent = `${score} / 50`;
+      sNum.className = `score-num ${c}`;
+      const bar = document.getElementById('bar-fill');
+      bar.className = `bar-fill ${c}`;
+      setTimeout(() => { bar.style.width = `${(score / 50) * 100}%`; }, 80);
+
+      const sc = r.scores || {};
+      document.getElementById('s-exec').textContent = sc.ejecucion ?? '—';
+      document.getElementById('s-site').textContent = sc.sitio ?? '—';
+      document.getElementById('s-docs').textContent = sc.documentacion ?? '—';
+      document.getElementById('s-edu').textContent = sc.educacion ?? '—';
+
+      const missing = Array.isArray(r.evidencia_faltante)
+        ? r.evidencia_faltante.filter(Boolean)
+        : (r.evidencia_faltante || '').split('\n').filter(Boolean);
+      if (missing.length) {
+        const list = document.getElementById('missing-list');
+        list.innerHTML = '';
+        missing.forEach(m => { const li = document.createElement('li'); li.textContent = m; list.appendChild(li); });
+        document.getElementById('missing-section').style.display = 'block';
+      }
+
+      document.getElementById('summary-text').textContent = r.resumen || '';
+
+      if (c !== 'pass' && data.edit_url) {
+        const btn = document.getElementById('retry-btn');
+        btn.href = data.edit_url;
+        btn.style.display = 'flex';
+      }
+
+      showState('state-result');
+      if (c === 'pass') confetti();
+    }
+
+    async function poll() {
+      if (!rowId) { document.getElementById('err-id').textContent = 'Error: falta row_id en la URL.'; showState('state-error'); return; }
+      try {
+        const res = await fetch(`${N8N_POLL_URL}?row_id=${encodeURIComponent(rowId)}`, { headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        if (data.status === 'complete') { clearInterval(pollTimer); clearInterval(stepTimer); renderResult(data); }
+        else if (Date.now() - startTime > MAX_WAIT) { clearInterval(pollTimer); clearInterval(stepTimer); document.getElementById('err-id').textContent = `ID de pedido: ${rowId}`; showState('state-error'); }
+      } catch (e) { console.warn('Poll:', e.message); }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!rowId) { document.getElementById('err-id').textContent = 'No se encontró el ID del pedido.'; showState('state-error'); return; }
+      showState('state-loading');
+      advanceStep();
+      stepTimer = setInterval(advanceStep, 7000);
+      poll();
+      pollTimer = setInterval(poll, POLL_INTERVAL);
     });
-  }
 
-  // ---------------------------------------------------------------
-  // RENDER RESULT
-  // ---------------------------------------------------------------
-  function renderResult(data) {
-    const r       = data.result;
-    const score   = Number(r.puntuacion_total) || 0;
-    const estado  = (r.estado || '').toUpperCase();
-    const cls     = estado === 'APROBADO' ? (score >= 45 ? 'pass' : 'risk') : 'fail';
-
-    // Hero
-    const icons   = { pass: '✅', risk: '⚠️', fail: '❌' };
-    const labels  = { pass: 'Aprobado', risk: 'En Riesgo', fail: 'Rechazado' };
-    const titles  = { pass: '¡Instalación validada!', risk: 'Instalación en riesgo', fail: 'Instalación rechazada' };
-
-    document.getElementById('result-icon').textContent = icons[cls];
-    document.getElementById('result-icon').className   = `result-icon ${cls}`;
-    document.getElementById('result-badge').textContent = labels[cls];
-    document.getElementById('result-badge').className   = `result-badge ${cls}`;
-    document.getElementById('result-title').textContent = titles[cls];
-    document.getElementById('result-outcome').textContent = r.resultado || '';
-
-    // Safety banner
-    if (r.seguridad === false || r.seguridad === 'false') {
-      document.getElementById('safety-banner').style.display = 'flex';
+    /* ── CONFETTI ── */
+    function confetti() {
+      const cv = document.getElementById('confetti-canvas');
+      cv.style.display = 'block';
+      cv.width = window.innerWidth; cv.height = window.innerHeight;
+      const ctx = cv.getContext('2d');
+      const palette = ['#22c55e', '#3b82f6', '#f59e0b', '#a855f7', '#ec4899'];
+      const pieces = Array.from({ length: 90 }, () => ({
+        x: Math.random() * cv.width, y: -Math.random() * cv.height * .5,
+        r: Math.random() * 5 + 2, d: Math.random() * 2.5 + 1,
+        color: palette[Math.floor(Math.random() * palette.length)],
+        angle: Math.random() * 360, spin: (Math.random() - .5) * 6
+      }));
+      let frame = 0;
+      (function draw() {
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        pieces.forEach(p => {
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.angle * Math.PI / 180);
+          ctx.fillStyle = p.color; ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 2); ctx.restore();
+          p.y += p.d; p.angle += p.spin;
+          if (p.y > cv.height) { p.y = -10; p.x = Math.random() * cv.width; }
+        });
+        if (++frame < 160) requestAnimationFrame(draw);
+        else { ctx.clearRect(0, 0, cv.width, cv.height); cv.style.display = 'none'; }
+      })();
     }
-
-    // Score
-    document.getElementById('score-number').textContent = `${score} / 50`;
-    document.getElementById('score-number').className   = `score-number ${cls}`;
-    document.getElementById('score-bar').className      = `score-bar-fill ${cls}`;
-    // Animate bar width after small delay
-    setTimeout(() => {
-      document.getElementById('score-bar').style.width = `${(score / 50) * 100}%`;
-    }, 100);
-
-    // Sub-scores
-    const sc = r.scores || {};
-    document.getElementById('s-exec').textContent = sc.ejecucion ?? '—';
-    document.getElementById('s-site').textContent = sc.sitio     ?? '—';
-    document.getElementById('s-docs').textContent = sc.documentacion ?? '—';
-    document.getElementById('s-edu').textContent  = sc.educacion ?? '—';
-
-    // Missing evidence
-    const missing = Array.isArray(r.evidencia_faltante)
-      ? r.evidencia_faltante.filter(Boolean)
-      : (r.evidencia_faltante || '').split('\n').filter(Boolean);
-
-    if (missing.length > 0) {
-      const sec  = document.getElementById('missing-section');
-      const list = document.getElementById('missing-list');
-      list.innerHTML = '';
-      missing.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = item;
-        list.appendChild(li);
-      });
-      sec.style.display = 'block';
-    }
-
-    // Summary
-    document.getElementById('summary-text').textContent = r.resumen || '';
-
-    // Retry button (show only when failed/risk)
-    if (cls !== 'pass' && data.edit_url) {
-      const btn = document.getElementById('retry-btn');
-      btn.href  = data.edit_url;
-      btn.style.display = 'block';
-    }
-
-    showState('state-result');
-
-    // Confetti on pass
-    if (cls === 'pass') launchConfetti();
-  }
-
-  // ---------------------------------------------------------------
-  // POLL LOOP
-  // ---------------------------------------------------------------
-  async function poll() {
-    if (!rowId) {
-      showState('state-error');
-      document.getElementById('error-order').textContent = 'Error: falta el parámetro row_id en la URL.';
-      return;
-    }
-
-    try {
-      const url = `${N8N_POLL_URL}?row_id=${encodeURIComponent(rowId)}`;
-      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-
-      if (data.status === 'complete') {
-        clearInterval(pollTimer);
-        clearInterval(stepTimer);
-        renderResult(data);
-        return;
-      }
-      // Still pending — check timeout
-      if (Date.now() - startTime > MAX_WAIT_MS) {
-        clearInterval(pollTimer);
-        clearInterval(stepTimer);
-        document.getElementById('error-order').textContent = `ID de pedido: ${rowId}`;
-        showState('state-error');
-      }
-    } catch (err) {
-      console.warn('Poll error:', err.message);
-      // Keep retrying silently on network errors
-    }
-  }
-
-  // ---------------------------------------------------------------
-  // INIT
-  // ---------------------------------------------------------------
-  document.addEventListener('DOMContentLoaded', () => {
-    if (!rowId) {
-      showState('state-error');
-      document.getElementById('error-order').textContent =
-        'No se encontró el ID del pedido en la URL. Por favor, vuelve al formulario.';
-      return;
-    }
-
-    showState('state-loading');
-
-    // Animate step indicators every ~7s to simulate progress
-    advanceStep(); // step 1 active immediately
-    stepTimer = setInterval(() => advanceStep(), 7000);
-
-    // Start polling
-    poll(); // fire immediately
-    pollTimer = setInterval(poll, POLL_INTERVAL_MS);
-  });
-
-  // ---------------------------------------------------------------
-  // CONFETTI (lightweight, no library)
-  // ---------------------------------------------------------------
-  function launchConfetti() {
-    const canvas = document.getElementById('confetti-canvas');
-    canvas.style.display = 'block';
-    const ctx    = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const pieces = Array.from({length: 80}, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * -canvas.height,
-      r: Math.random() * 6 + 3,
-      d: Math.random() * 2 + 1,
-      color: ['#22c55e','#3b82f6','#f59e0b','#8b5cf6','#ec4899'][Math.floor(Math.random()*5)],
-      angle: Math.random() * 360,
-      spin: (Math.random() - 0.5) * 5
-    }));
-
-    let frame = 0;
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      pieces.forEach(p => {
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate((p.angle * Math.PI) / 180);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r * 2);
-        ctx.restore();
-        p.y += p.d;
-        p.angle += p.spin;
-        if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
-      });
-      frame++;
-      if (frame < 150) requestAnimationFrame(draw);
-      else { ctx.clearRect(0, 0, canvas.width, canvas.height); canvas.style.display = 'none'; }
-    }
-    draw();
-  }
-</script>
+  </script>
 </body>
+
 </html>
