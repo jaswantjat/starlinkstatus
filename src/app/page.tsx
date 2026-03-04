@@ -580,7 +580,7 @@ function VerificationInner() {
       {/* Content */}
       <div className="flex-1 px-4">
         <AnimatePresence mode="wait">
-          {appState === "loading" && <LoadingView key="loading" msgIdx={msgIdx} />}
+            {appState === "loading" && <LoadingView key="loading" elapsed={elapsed} />}
           {appState === "result" && resultRow && (
             <ResultView key="result" row={resultRow} editUrl={editUrl} barReady={barReady} isDemo={isDemo} />
           )}
