@@ -484,17 +484,14 @@ function VerificationInner() {
 
     if (isDemo) {
       const demoRow = demoMode === "fail" ? DEMO_FAIL : DEMO_PASS;
-      const t = setTimeout(() => {
-        clearInterval(tickRef.current!);
-        setResultRow(demoRow);
-        setTimeout(() => {
-          setAppState("result");
-          setTimeout(() => setBarReady(true), 100);
-          if (demoMode !== "fail") {
-            setTimeout(() => { if (canvasRef.current) runConfetti(canvasRef.current); }, 600);
-          }
-        }, 400);
-      }, 3200);
+        const t = setTimeout(() => {
+          clearInterval(tickRef.current!);
+          setResultRow(demoRow);
+          setTimeout(() => {
+            setAppState("result");
+            setTimeout(() => setBarReady(true), 100);
+          }, 400);
+        }, 3200);
       return () => { clearTimeout(t); clearInterval(tickRef.current!); };
     }
 
