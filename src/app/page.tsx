@@ -46,13 +46,14 @@ const DEMO_PASS: VerificationRow = {
 
 const DEMO_FAIL: VerificationRow = {
   Estado: "RECHAZADO",
-  "Puntuación Total": 28,
-  "Seguridad Aprobada": false,
-  "Evidencia Faltante": "Foto del plato montado\nFoto del cableado interior\nFoto del router instalado",
-  "Puntuación: Ejecución": 7,
+  "Puntuación Total": 30,
+  "Seguridad Aprobada": true,
+  "Evidencia Faltante": "Captura de pantalla visible del Test de Velocidad\nCaptura de pantalla visible del Visor de Obstrucciones",
+  "Puntuación: Ejecución": 10,
   "Puntuación: Condición del Sitio": 5,
-  "Puntuación: Documentación": 9,
-  "Puntuación: Educación": 7,
+  "Puntuación: Documentación": 10,
+  "Puntuación: Educación": 5,
+  "Resumen IA": "La documentación técnica es insuficiente. ACCIONES REQUERIDAS: 1. Realiza capturas de pantalla legibles de la app Starlink mostrando el estado 'Online' y el test de velocidad (mínimo 100 Mbps). 2. Toma una captura del Visor de Obstrucciones sin zonas rojas. 3. Organiza el área del router y fotografía la instalación interior limpia. 4. Sube las nuevas evidencias al portal.",
 };
 
 /* ─── helpers ───────────────────────────────────────────── */
