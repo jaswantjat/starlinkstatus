@@ -102,7 +102,6 @@ const THEME = {
     barClass: "from-green-600 to-green-400",
     badgeBg: "bg-green-500/10 border-green-500/20",
     textClass: "text-green-400",
-    ringColor: "rgba(74,222,128,0.15)",
   },
   risk: {
     color: "#fbbf24",
@@ -111,7 +110,6 @@ const THEME = {
     barClass: "from-amber-600 to-amber-400",
     badgeBg: "bg-amber-500/10 border-amber-500/20",
     textClass: "text-amber-400",
-    ringColor: "rgba(251,191,36,0.15)",
   },
   fail: {
     color: "#f87171",
@@ -120,7 +118,6 @@ const THEME = {
     barClass: "from-red-700 to-red-400",
     badgeBg: "bg-red-500/10 border-red-500/20",
     textClass: "text-red-400",
-    ringColor: "rgba(248,113,113,0.15)",
   },
 };
 
