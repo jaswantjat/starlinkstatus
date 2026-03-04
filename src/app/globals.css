@@ -127,82 +127,11 @@ nextjs-portal {
 }
 
 /* ── Animations ─────────────────────────────────────── */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes scanline {
+@keyframes loading-shuttle {
   0%   { transform: translateX(-100%); }
-  100% { transform: translateX(300%); }
+  100% { transform: translateX(400%); }
 }
 
-@keyframes pulse-ring {
-  0%   { transform: scale(1);    opacity: 0.4; }
-  50%  { transform: scale(1.12); opacity: 0.15; }
-  100% { transform: scale(1);    opacity: 0.4; }
-}
-
-@keyframes aurora-1 {
-  0%, 100% { transform: translate(0%, 0%)   scale(1);    opacity: 0.5; }
-  33%       { transform: translate(5%, -8%)  scale(1.08); opacity: 0.7; }
-  66%       { transform: translate(-4%, 6%)  scale(0.95); opacity: 0.4; }
-}
-
-@keyframes aurora-2 {
-  0%, 100% { transform: translate(0%, 0%)    scale(1);    opacity: 0.4; }
-  33%       { transform: translate(-6%, 8%)   scale(1.1);  opacity: 0.6; }
-  66%       { transform: translate(8%, -5%)   scale(0.92); opacity: 0.35; }
-}
-
-@keyframes aurora-3 {
-  0%, 100% { transform: translate(0%, 0%)    scale(1);    opacity: 0.35; }
-  50%       { transform: translate(-3%, -6%)  scale(1.06); opacity: 0.55; }
-}
-
-@keyframes float-particle {
-  0%, 100% { transform: translateY(0px);  opacity: 0.6; }
-  50%       { transform: translateY(-18px); opacity: 1; }
-}
-
-@keyframes loading-bar {
-  0%   { transform: translateX(-100%); }
-  50%  { transform: translateX(0%);    }
-  100% { transform: translateX(100%);  }
-}
-
-@keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
-}
-
-/* ── Utility classes ───────────────────────────────── */
-.bg-grid-white {
-  background-size: 30px 30px;
-  background-image:
-    linear-gradient(to right,  rgba(255,255,255,0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
-}
-
-.animate-aurora-1 {
-  animation: aurora-1 14s ease-in-out infinite;
-}
-.animate-aurora-2 {
-  animation: aurora-2 18s ease-in-out infinite;
-}
-.animate-aurora-3 {
-  animation: aurora-3 22s ease-in-out infinite;
-}
-.animate-loading-bar {
-  animation: loading-bar 1.6s ease-in-out infinite;
-}
-.animate-shimmer {
-  background-size: 200% auto;
-  animation: shimmer 2.5s linear infinite;
-}
-.animate-pulse-ring {
-  animation: pulse-ring 3s ease-out infinite;
-}
-.animate-scanline {
-  animation: scanline 2.4s linear infinite;
+.animate-loading-shuttle {
+  animation: loading-shuttle 1.4s ease-in-out infinite;
 }
