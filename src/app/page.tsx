@@ -561,12 +561,7 @@ function VerificationInner() {
         </span>
       </footer>
 
-      {/* Confetti canvas */}
-      <canvas
-        ref={canvasRef}
-        style={{ display: "none" }}
-        className="fixed inset-0 pointer-events-none z-50"
-      />
+
     </div>
   );
 }
