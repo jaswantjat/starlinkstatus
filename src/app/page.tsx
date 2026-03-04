@@ -504,7 +504,9 @@ function VerificationInner() {
   const startRef = useRef(Date.now());
 
   useEffect(() => {
-    msgRef.current = setInterval(() => setMsgIdx((i) => i + 1), 2800);
+    tickRef.current = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startRef.current) / 1000));
+    }, 1000);
 
     if (isDemo) {
       const demoRow = demoMode === "fail" ? DEMO_FAIL : DEMO_PASS;
