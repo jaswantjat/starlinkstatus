@@ -247,11 +247,13 @@ function buildFixSteps(
 /* ─── result view ───────────────────────────────────────── */
 function ResultView({
   row,
+  rowId,
   editUrl,
   barReady,
   isDemo,
 }: {
   row: VerificationRow;
+  rowId: string;
   editUrl: string | null;
   barReady: boolean;
   isDemo: boolean;
@@ -416,6 +418,11 @@ function ResultView({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.55 }}
           href={editUrl}
+          onClick={() => {
+            if (!isDemo && typeof window !== "undefined") {
+              localStorage.setItem(`awaiting_new_${rowId}`, Date.now().toString());
+            }
+          }}
           className="flex items-center justify-center gap-2 w-full py-3.5 bg-white text-black text-sm font-semibold rounded-2xl no-underline active:scale-[0.98] transition-transform"
         >
           Volver a llenar el formulario
@@ -429,7 +436,7 @@ function ResultView({
 }
 
 /* ─── error view ────────────────────────────────────────── */
-function ErrorView({ rowId }: { rowId: string }) {
+function ErrorView({ rowId, isTimeout }: { rowId: string; isTimeout?: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -442,9 +449,13 @@ function ErrorView({ rowId }: { rowId: string }) {
         </svg>
       </div>
       <div>
-        <h2 className="text-lg font-semibold text-white/80 mb-1">No se encontraron datos</h2>
-        <p className="text-sm text-white/35 max-w-[260px] leading-relaxed">
-          Verifica que el enlace sea correcto o contacta al soporte.
+        <h2 className="text-lg font-semibold text-white/80 mb-2">
+          {isTimeout ? "Tiempo de espera agotado" : "No se encontraron datos"}
+        </h2>
+        <p className="text-sm text-white/35 max-w-[280px] leading-relaxed mb-4">
+          {isTimeout
+            ? "La validación está tomando demasiado tiempo o ocurrió un error. Puedes cerrar esta página y te contactaremos con el resultado."
+            : "Verifica que el enlace sea correcto o contacta al soporte."}
         </p>
       </div>
       {rowId && (
@@ -468,6 +479,7 @@ function VerificationInner() {
 
   type AppState = "loading" | "result" | "error";
   const [appState, setAppState] = useState<AppState>("loading");
+  const [errorIsTimeout, setErrorIsTimeout] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [resultRow, setResultRow] = useState<VerificationRow | null>(null);
   const [editUrl, setEditUrl] = useState<string | null>(editUrlParam ?? (isDemo ? "#" : null));
@@ -495,18 +507,56 @@ function VerificationInner() {
       return () => { clearTimeout(t); clearInterval(tickRef.current!); };
     }
 
+    let mustWaitForNewer = false;
+    let cachedMaxId = 0;
+
+    if (!isDemo && typeof window !== "undefined") {
+      const editClicked = parseInt(localStorage.getItem(`awaiting_new_${rowId}`) || "0", 10);
+      if (editClicked > 0 && Date.now() - editClicked < 600000) {
+        mustWaitForNewer = true;
+      }
+      const ref = document.referrer || "";
+      const fromForm = ref.includes("fillout.com") || ref.includes("forms.starlink");
+      const sessionLanded = sessionStorage.getItem(`landed_${rowId}`);
+      if (fromForm && !sessionLanded) {
+        mustWaitForNewer = true;
+        sessionStorage.setItem(`landed_${rowId}`, "true");
+      }
+      cachedMaxId = parseInt(localStorage.getItem(`max_report_id_${rowId}`) || "0", 10);
+    }
+
     async function poll() {
       try {
-        const res = await fetch(`/api/verification?row_id=${encodeURIComponent(rowId)}`);
+        const res = await fetch(`/api/verification?row_id=${encodeURIComponent(rowId)}&_t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
-        if (!data.found) {
-          if (Date.now() - startRef.current > 90000) {
+
+        if (!data.found || !data.row) {
+          // Reduce timeout to 60s since n8n should take 30-40s max
+          if (Date.now() - startRef.current > 60000) {
             clearInterval(pollRef.current!);
             clearInterval(tickRef.current!);
+            setErrorIsTimeout(true);
             setAppState("error");
           }
           return;
         }
+
+        const currentId = parseInt(data.row.id, 10);
+
+        if (mustWaitForNewer && cachedMaxId > 0 && currentId <= cachedMaxId) {
+          // We are awaiting a new report, so we ignore the old cached one and keep polling!
+          return;
+        }
+
+        if (!isDemo && typeof window !== "undefined") {
+          if (currentId > cachedMaxId) {
+            localStorage.setItem(`max_report_id_${rowId}`, currentId.toString());
+          }
+          if (mustWaitForNewer) {
+            localStorage.removeItem(`awaiting_new_${rowId}`);
+          }
+        }
+
         clearInterval(pollRef.current!);
         clearInterval(tickRef.current!);
         setResultRow(data.row);
@@ -517,6 +567,13 @@ function VerificationInner() {
         }, 600);
       } catch (e) {
         console.warn("poll error:", e);
+        // If network strictly fails for 60s, also timeout
+        if (Date.now() - startRef.current > 60000) {
+          clearInterval(pollRef.current!);
+          clearInterval(tickRef.current!);
+          setErrorIsTimeout(true);
+          setAppState("error");
+        }
       }
     }
 
@@ -548,9 +605,9 @@ function VerificationInner() {
         <AnimatePresence mode="wait">
           {appState === "loading" && <LoadingView key="loading" elapsed={elapsed} />}
           {appState === "result" && resultRow && (
-            <ResultView key="result" row={resultRow} editUrl={editUrl} barReady={barReady} isDemo={isDemo} />
+            <ResultView key="result" row={resultRow} rowId={rowId} editUrl={editUrl} barReady={barReady} isDemo={isDemo} />
           )}
-          {appState === "error" && <ErrorView key="error" rowId={rowId} />}
+          {appState === "error" && <ErrorView key="error" rowId={rowId} isTimeout={errorIsTimeout} />}
         </AnimatePresence>
       </div>
 
