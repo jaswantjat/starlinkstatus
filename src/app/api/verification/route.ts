@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
   // Query table 814 for the QA result linked to this row_id
   const res = await fetch(
-    `${BASEROW}/table/814/?user_field_names=true&filter__field_8388__link_row_has=${rowId}&size=1`,
+    `${BASEROW}/table/814/?user_field_names=true&filter__field_8388__link_row_has=${rowId}`,
     { headers, next: { revalidate: 0 } }
   );
 
@@ -24,7 +24,11 @@ export async function GET(req: NextRequest) {
   }
 
   const data = await res.json();
-  const row = (data.results || [])[0] ?? null;
+  const rows = data.results || [];
+
+  // Sort by id descending so we always get the latest report
+  rows.sort((a: any, b: any) => b.id - a.id);
+  const row = rows[0] ?? null;
 
   if (!row) {
     return NextResponse.json({ found: false });
