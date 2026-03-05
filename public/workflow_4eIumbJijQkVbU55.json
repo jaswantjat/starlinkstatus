@@ -1,0 +1,1092 @@
+{
+  "updatedAt": "2026-03-04T17:49:52.607Z",
+  "createdAt": "2026-02-26T14:45:17.085Z",
+  "id": "4eIumbJijQkVbU55",
+  "name": "techincian pdf ai review",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "model": "google/gemini-3-flash-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -864,
+        1152
+      ],
+      "id": "33b41fef-1be2-416f-816f-0693d34d5bb3",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "uVnf40HmiF8SxerX",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body_installer_form_pdf_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1600,
+        928
+      ],
+      "id": "f28028f5-f967-462e-b060-e07e8a8403ff",
+      "name": "Download PDF1"
+    },
+    {
+      "parameters": {
+        "outputFormat": "png",
+        "additionalOptions": "="
+      },
+      "type": "@cloudconvert/n8n-nodes-cloudconvert.cloudConvert",
+      "typeVersion": 1,
+      "position": [
+        -1376,
+        928
+      ],
+      "id": "48547144-44ff-4bb2-a79f-75e7837776d9",
+      "name": "CloudConvert1",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "cloudConvertOAuth2Api": {
+          "id": "3Sv7GJewBRUIjwXC",
+          "name": "CloudConvert account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Grab all items output by CloudConvert\nconst items = $input.all();\n\n// Create a single item to hold everything, keeping the original webhook JSON\nconst mergedItem = {\n  json: items[0].json,\n  binary: {}\n};\n\n// Loop through the items and attach each image as a new property\nitems.forEach((item, index) => {\n  if (item.binary && item.binary.data) {\n    mergedItem.binary[`page_${index + 1}`] = item.binary.data;\n  }\n});\n\n// Return exactly one item containing all pages\nreturn [mergedItem];"
+      },
+      "id": "c00d051e-259d-4420-9176-ef6eb902261f",
+      "name": "Merge Pages1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1152,
+        928
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "===Eres un Validador de Control de Calidad (QA) asertivo y flexible para Instalaciones de Starlink. \n\n## METADATOS DEL SISTEMA:\n- Nombre del Cliente: {{ $('Start').first().json.body_customer_name_firstItem }}\n- ID del Pedido: {{ $('Start').first().json.body_order_id_firstItem }}\n- Tipo de Soporte (Mount): {{ $('Start').first().json.body_mount_type_firstItem }}\n- Fecha de Instalaci\u00f3n: {{ $('Start').first().json.body_completed_installation_date_firstItem }}\n- Cable Utilizado: {{ $('Start').first().json.body_firstItem['\u00bfQu\u00e9 cable has utilizado?'] }}\n\n## R\u00daBRICA E INSTRUCCIONES:\nEval\u00faa las im\u00e1genes y/o p\u00e1ginas del PDF adjuntas utilizando la siguiente r\u00fabrica detallada:\n\n1. Seguridad (Pasa / Falla): Verifica la estabilidad estructural del montaje y que el enrutamiento del cableado sea seguro. Si hay un riesgo de seguridad cr\u00edtico, ind\u00edcalo, pero s\u00e9 permisivo con defectos cosm\u00e9ticos menores.\n2. Ejecuci\u00f3n de la Instalaci\u00f3n (15 pts): La antena est\u00e1 montada de forma segura, correctamente alineada y la instalaci\u00f3n f\u00edsica est\u00e1 terminada.\n3. Condici\u00f3n del Sitio (10 pts): Limpieza del \u00e1rea de trabajo (5 pts) y evidencia de respeto por la propiedad del cliente (5 pts).\n4. Documentaci\u00f3n (15 pts): Se han enviado todas las fotograf\u00edas requeridas (10 pts) y las notas describen el trabajo con precisi\u00f3n (5 pts).\n5. Educaci\u00f3n del Cliente (10 pts): Evidencia de captura de pantalla del Test de Velocidad (5 pts) y Visor de Obstrucciones (5 pts).\n6. Autenticidad (Pasa / Falla): Comprueba si las fotos parecen genuinas, sin alteraciones. S\u00e9 comprensivo si la foto es aut\u00e9ntica pero de baja calidad.\n\n## EVALUACI\u00d3N Y RESULTADO:\nCalcula la Puntuaci\u00f3n Total (Sobre un m\u00e1ximo de 50 puntos). \nDetermina el Resultado de Acci\u00f3n bas\u00e1ndote en la puntuaci\u00f3n:\n- 45-50: Aprobado - Excelente\n- 40-44: Aprobado - Monitorizar\n- 35-39: En Riesgo\n- <35 o Falla de Seguridad o Autenticidad: Rechazado\n\n## REGLA ESTRICTA PARA EL RESUMEN (SUMMARY):\nEl campo \"summary\" alimentar\u00e1 la secci\u00f3n \"Resumen de IA\" en nuestra base de datos.\n- Si la instalaci\u00f3n es PERFECTA (50/50): Solo da un breve resumen positivo (ej. \"Instalaci\u00f3n perfecta, cumple todos los est\u00e1ndares.\")\n- Si la instalaci\u00f3n FALLA, EST\u00c1 EN RIESGO, o PIERDE PUNTOS: Debes ser AMABLE, DIRECTO Y ACCIONABLE. No seas excesivamente estricto. Empieza diciendo qu\u00e9 fall\u00f3, y luego a\u00f1ade obligatoriamente una secci\u00f3n llamada \"ACCIONES REQUERIDAS:\" listando paso a paso (reiteration steps) qu\u00e9 debe hacer exactamente el instalador para arreglarlo y qu\u00e9 evidencia nueva debe subir.\n\n## FORMATO EXACTO DE SALIDA JSON:\nDebes devolver el resultado usando estrictamente esta estructura JSON. Escribe todos los textos din\u00e1micos en ESPA\u00d1OL.\n\n{\n  \"status\": \"APROBADO\" o \"RECHAZADO\",\n  \"outcome\": \"<Inserta aqu\u00ed la categor\u00eda de resultado obtenida arriba>\",\n  \"total_score\": <n\u00famero entero 0-50>,\n  \"safety_passed\": true/false,\n  \"category_scores\": {\n    \"installation_execution\": <n\u00famero 0-15>,\n    \"site_condition\": <n\u00famero 0-10>,\n    \"documentation\": <n\u00famero 0-15>,\n    \"customer_education\": <n\u00famero 0-10>\n  },\n  \"missing_evidence\": [\n    \"Lista en espa\u00f1ol qu\u00e9 fotos faltan, o un array vac\u00edo si no falta nada\"\n  ],\n  \"summary\": \"Si es perfecto: resumen positivo. Si falla o pierde puntos: Explica el error + 'ACCIONES REQUERIDAS: [Lista de pasos para que el instalador lo solucione y fotos nuevas que debe enviar]'\"\n}",
+        "options": {
+          "systemMessage": "You are a helpful, accommodating, and fair Quality Assurance AI. Do not be overly strict. Always respond with perfectly formatted JSON only.",
+          "passthroughBinaryImages": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -928,
+        928
+      ],
+      "id": "93760247-5468-4653-aa7d-c65a1b1a8e3a",
+      "name": "AI Agent - Validate PDF",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse the AI response and extract validation result\nconst aiResponse = $input.first().json.output || $input.first().json.text || '';\n\nconst webhookData = $('Start').first().json.body_firstItem;\n\nlet validationResult;\ntry {\n  // Try to find JSON in the response\n  const jsonMatch = aiResponse.match(/```json\\s*([\\s\\S]*?)```/) || aiResponse.match(/(\\{[\\s\\S]*\\})/);\n  \n  if (jsonMatch) {\n    const jsonStr = jsonMatch[1] || jsonMatch[0];\n    validationResult = JSON.parse(jsonStr);\n  } else {\n    // If no JSON found, try parsing the whole response\n    validationResult = JSON.parse(aiResponse);\n  }\n} catch (e) {\n  // Fallback if parsing fails\n  validationResult = {\n    status: \"ERROR\",\n    outcome: \"Parsing Error\",\n    total_score: 0,\n    safety_passed: false,\n    category_scores: {},\n    missing_evidence: [\"Unable to parse AI response\"],\n    summary: \"Validation could not be completed due to parsing error\"\n  };\n}\n\n// Add metadata to the result\nreturn {\n  json: {\n    validation: validationResult,\n    metadata: {\n      order_id: webhookData.order_id,\n      customer_name: webhookData.customer_name,\n      submission_id: webhookData.submission_id,\n      row_id: webhookData.row_id,\n      pdf_filename: webhookData.installer_form_pdf?.filename,\n      validated_at: new Date().toISOString()\n    },\n    // IMPORTANT: Checking for APROBADO instead of PASS\n    passed: validationResult.status === 'APROBADO',\n    raw_ai_response: aiResponse\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -576,
+        928
+      ],
+      "id": "aa434151-0b6c-48fb-a55f-6a3a574421d3",
+      "name": "Parse AI Result1"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "body_installer_form_pdf_url",
+              "type": "any"
+            },
+            {
+              "name": "body_completed_installation_date_firstItem",
+              "type": "any"
+            },
+            {
+              "name": "body_customer_name_firstItem",
+              "type": "any"
+            },
+            {
+              "name": "body_mount_type_firstItem",
+              "type": "any"
+            },
+            {
+              "name": "body_order_id_firstItem",
+              "type": "any"
+            },
+            {
+              "name": "body_firstItem",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "47cedb07-d8a9-4d80-aa63-88a405d85c13",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -1808,
+        928
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "databaseId": 170,
+        "tableId": 814,
+        "filtersUi": {
+          "filterValues": [
+            {
+              "fieldId": 8388,
+              "operator": "link_row_contains",
+              "value": "={{ [Number($json.metadata.row_id)] }}"
+            }
+          ]
+        }
+      },
+      "id": "get-existing-report",
+      "name": "Find Existing Report",
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        928
+      ],
+      "credentials": {
+        "baserowApi": {
+          "id": "YrKCm27IDyFcgBzd",
+          "name": "Baserow account (spain)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.id ? true : false }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "if-report-exists",
+      "name": "IF Report Exists",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        928
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "databaseId": 170,
+        "tableId": 814,
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": 8388,
+              "fieldValue": "={{ [Number($('Parse AI Result1').first().json.metadata.row_id)] }}"
+            },
+            {
+              "fieldId": 8376,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.status }}"
+            },
+            {
+              "fieldId": 8377,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.outcome }}"
+            },
+            {
+              "fieldId": 8378,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.total_score }}"
+            },
+            {
+              "fieldId": 8379,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.safety_passed }}"
+            },
+            {
+              "fieldId": 8382,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.missing_evidence.join('\\n') }}"
+            },
+            {
+              "fieldId": 8383,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.category_scores.installation_execution }}"
+            },
+            {
+              "fieldId": 8384,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.category_scores.site_condition }}"
+            },
+            {
+              "fieldId": 8385,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.category_scores.documentation }}"
+            },
+            {
+              "fieldId": 8386,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.category_scores.customer_education }}"
+            },
+            {
+              "fieldId": 8387,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.summary }}"
+            }
+          ]
+        },
+        "rowId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        100,
+        800
+      ],
+      "id": "update-existing-report",
+      "name": "Update Existing Report",
+      "credentials": {
+        "baserowApi": {
+          "id": "YrKCm27IDyFcgBzd",
+          "name": "Baserow account (spain)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "databaseId": 170,
+        "tableId": 814,
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": 8388,
+              "fieldValue": "={{ [Number($('Parse AI Result1').first().json.metadata.row_id)] }}"
+            },
+            {
+              "fieldId": 8376,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.status }}"
+            },
+            {
+              "fieldId": 8377,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.outcome }}"
+            },
+            {
+              "fieldId": 8378,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.total_score }}"
+            },
+            {
+              "fieldId": 8379,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.safety_passed }}"
+            },
+            {
+              "fieldId": 8382,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.missing_evidence.join('\\n') }}"
+            },
+            {
+              "fieldId": 8383,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.category_scores.installation_execution }}"
+            },
+            {
+              "fieldId": 8384,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.category_scores.site_condition }}"
+            },
+            {
+              "fieldId": 8385,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.category_scores.documentation }}"
+            },
+            {
+              "fieldId": 8386,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.category_scores.customer_education }}"
+            },
+            {
+              "fieldId": 8387,
+              "fieldValue": "={{ $('Parse AI Result1').first().json.validation.summary }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        100,
+        1050
+      ],
+      "id": "create-new-report",
+      "name": "Create New Report",
+      "credentials": {
+        "baserowApi": {
+          "id": "YrKCm27IDyFcgBzd",
+          "name": "Baserow account (spain)"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Save to Baserow": {
+      "main": [
+        []
+      ]
+    },
+    "Download PDF1": {
+      "main": [
+        [
+          {
+            "node": "CloudConvert1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Validate PDF",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CloudConvert1": {
+      "main": [
+        [
+          {
+            "node": "Merge Pages1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Pages1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Validate PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Validate PDF": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Result1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Result1": {
+      "main": [
+        [
+          {
+            "node": "Find Existing Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Download PDF1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Existing Report": {
+      "main": [
+        [
+          {
+            "node": "IF Report Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Report Exists": {
+      "main": [
+        [
+          {
+            "node": "Update Existing Report",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create New Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "body_installer_form_pdf_url": "https://api.fillout.com/v1/files/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJtaXNzaW9uSWQiOiIyODZjZTZhMS0wMGVkLTQ3YTgtOWUwZC1lZGY2Yzk4YTZiNDUiLCJkb2N1bWVudElkIjoiNGY3Yzg1ZmQtZGUwMi00MWUxLThhYjMtNTIzMDFkYTU2NjAwIiwiZmxvd1B1YmxpY0lkZW50aWZpZXIiOiI4UnBOcXdneXh3dXMiLCJtb2RlIjoibGl2ZSIsImlhdCI6MTc3MjYzNjQxMX0.FKvxAkaBbfrrwt_J0P6v5zP7gwPYEE2Ep08b8pgAOkc",
+          "body_completed_installation_date_firstItem": "2026-03-04T15:00:00.000Z",
+          "body_customer_name_firstItem": "Joao Paulo Da Mota Mendes",
+          "body_mount_type_firstItem": "Wall Mount (Pared)",
+          "body_order_id_firstItem": "ES-RE-1772550833221",
+          "body_firstItem": {
+            "customer_name": "Joao Paulo Da Mota Mendes",
+            "installer_form_pdf": {
+              "filename": "row_id_2554.pdf",
+              "url": "https://api.fillout.com/v1/files/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJtaXNzaW9uSWQiOiIyODZjZTZhMS0wMGVkLTQ3YTgtOWUwZC1lZGY2Yzk4YTZiNDUiLCJkb2N1bWVudElkIjoiNGY3Yzg1ZmQtZGUwMi00MWUxLThhYjMtNTIzMDFkYTU2NjAwIiwiZmxvd1B1YmxpY0lkZW50aWZpZXIiOiI4UnBOcXdneXh3dXMiLCJtb2RlIjoibGl2ZSIsImlhdCI6MTc3MjYzNjQxMX0.FKvxAkaBbfrrwt_J0P6v5zP7gwPYEE2Ep08b8pgAOkc"
+            },
+            "mount_type": "Wall Mount (Pared)",
+            "row_id": "2554",
+            "order_id": "ES-RE-1772550833221",
+            "submission_id": "286ce6a1-00ed-47a8-9e0d-edf6c98a6b45",
+            "current_location_latitude": "42.73603",
+            "current_location_longitude": "-2.6406767",
+            "edit_form": "False",
+            "completed_installation_date": "2026-03-04T15:00:00.000Z",
+            "additional_expenses_value": null,
+            "additional_expenses": "NO",
+            "additional_expenses_info": "",
+            "\u00bfQu\u00e9 cable has utilizado?": "Cable de 15m del cliente (incluido en el kit)\n"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Parse AI Result1": [
+      {
+        "json": {
+          "validation": {
+            "status": "RECHAZADO",
+            "outcome": "Rechazado",
+            "total_score": 30,
+            "safety_passed": true,
+            "category_scores": {
+              "installation_execution": 10,
+              "site_condition": 5,
+              "documentation": 10,
+              "customer_education": 5
+            },
+            "missing_evidence": [
+              "Captura de pantalla visible del Test de Velocidad",
+              "Captura de pantalla visible del Visor de Obstrucciones",
+              "Captura de pantalla visible de Alineaci\u00f3n final",
+              "Captura de pantalla visible de Actualizaci\u00f3n de software"
+            ],
+            "summary": "La documentaci\u00f3n t\u00e9cnica es insuficiente ya que todas las capturas de pantalla de la aplicaci\u00f3n Starlink (Obstrucciones, Velocidad, Alineaci\u00f3n y Software) est\u00e1n censuradas o en negro, impidiendo la validaci\u00f3n del servicio. Adem\u00e1s, el entorno del router muestra desorden. ACCIONES REQUERIDAS: 1. El instalador debe regresar al domicilio y realizar capturas de pantalla reales y legibles de la aplicaci\u00f3n Starlink donde se vea claramente el estado 'Online', el test de velocidad (m\u00ednimo 100Mbps download), el visor de obstrucciones sin zonas rojas y la confirmaci\u00f3n de software actualizado. 2. Debe organizar el \u00e1rea donde se ubic\u00f3 el router y tomar una nueva fotograf\u00eda de la instalaci\u00f3n interna terminada y limpia. 3. Subir estas nuevas evidencias al portal de calidad."
+          },
+          "metadata": {
+            "order_id": "ES-RE-1772550833221",
+            "customer_name": "Joao Paulo Da Mota Mendes",
+            "submission_id": "286ce6a1-00ed-47a8-9e0d-edf6c98a6b45",
+            "row_id": "2554",
+            "pdf_filename": "row_id_2554.pdf",
+            "validated_at": "2026-03-04T15:00:49.753Z"
+          },
+          "passed": false,
+          "raw_ai_response": "{\n  \"status\": \"RECHAZADO\",\n  \"outcome\": \"Rechazado\",\n  \"total_score\": 30,\n  \"safety_passed\": true,\n  \"category_scores\": {\n    \"installation_execution\": 10,\n    \"site_condition\": 5,\n    \"documentation\": 10,\n    \"customer_education\": 5\n  },\n  \"missing_evidence\": [\n    \"Captura de pantalla visible del Test de Velocidad\",\n    \"Captura de pantalla visible del Visor de Obstrucciones\",\n    \"Captura de pantalla visible de Alineaci\u00f3n final\",\n    \"Captura de pantalla visible de Actualizaci\u00f3n de software\"\n  ],\n  \"summary\": \"La documentaci\u00f3n t\u00e9cnica es insuficiente ya que todas las capturas de pantalla de la aplicaci\u00f3n Starlink (Obstrucciones, Velocidad, Alineaci\u00f3n y Software) est\u00e1n censuradas o en negro, impidiendo la validaci\u00f3n del servicio. Adem\u00e1s, el entorno del router muestra desorden. ACCIONES REQUERIDAS: 1. El instalador debe regresar al domicilio y realizar capturas de pantalla reales y legibles de la aplicaci\u00f3n Starlink donde se vea claramente el estado 'Online', el test de velocidad (m\u00ednimo 100Mbps download), el visor de obstrucciones sin zonas rojas y la confirmaci\u00f3n de software actualizado. 2. Debe organizar el \u00e1rea donde se ubic\u00f3 el router y tomar una nueva fotograf\u00eda de la instalaci\u00f3n interna terminada y limpia. 3. Subir estas nuevas evidencias al portal de calidad.\"\n}"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "AI Agent - Validate PDF": [
+      {
+        "json": {
+          "output": "{\n  \"status\": \"RECHAZADO\",\n  \"outcome\": \"Rechazado\",\n  \"total_score\": 30,\n  \"safety_passed\": true,\n  \"category_scores\": {\n    \"installation_execution\": 10,\n    \"site_condition\": 5,\n    \"documentation\": 10,\n    \"customer_education\": 5\n  },\n  \"missing_evidence\": [\n    \"Captura de pantalla visible del Test de Velocidad\",\n    \"Captura de pantalla visible del Visor de Obstrucciones\",\n    \"Captura de pantalla visible de Alineaci\u00f3n final\",\n    \"Captura de pantalla visible de Actualizaci\u00f3n de software\"\n  ],\n  \"summary\": \"La documentaci\u00f3n t\u00e9cnica es insuficiente ya que todas las capturas de pantalla de la aplicaci\u00f3n Starlink (Obstrucciones, Velocidad, Alineaci\u00f3n y Software) est\u00e1n censuradas o en negro, impidiendo la validaci\u00f3n del servicio. Adem\u00e1s, el entorno del router muestra desorden. ACCIONES REQUERIDAS: 1. El instalador debe regresar al domicilio y realizar capturas de pantalla reales y legibles de la aplicaci\u00f3n Starlink donde se vea claramente el estado 'Online', el test de velocidad (m\u00ednimo 100Mbps download), el visor de obstrucciones sin zonas rojas y la confirmaci\u00f3n de software actualizado. 2. Debe organizar el \u00e1rea donde se ubic\u00f3 el router y tomar una nueva fotograf\u00eda de la instalaci\u00f3n interna terminada y limpia. 3. Subir estas nuevas evidencias al portal de calidad.\"\n}"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Merge Pages1": [
+      {
+        "json": {},
+        "binary": {
+          "page_1": {
+            "mimeType": "image/png",
+            "fileType": "image",
+            "fileExtension": "png",
+            "data": "database",
+            "fileName": "row_id_2554-1.png",
+            "id": "database:b4e1e7f3-11cd-48ed-992d-ea191c577685",
+            "fileSize": "886 kB"
+          },
+          "page_2": {
+            "mimeType": "image/png",
+            "fileType": "image",
+            "fileExtension": "png",
+            "data": "database",
+            "fileName": "row_id_2554-2.png",
+            "id": "database:272fce0b-dd3b-4cee-aca9-8cc98d6dbe86",
+            "fileSize": "1.15 MB"
+          },
+          "page_3": {
+            "mimeType": "image/png",
+            "fileType": "image",
+            "fileExtension": "png",
+            "data": "database",
+            "fileName": "row_id_2554-3.png",
+            "id": "database:ce3c403c-423a-4362-aef5-bbeede8f8972",
+            "fileSize": "1.13 MB"
+          },
+          "page_4": {
+            "mimeType": "image/png",
+            "fileType": "image",
+            "fileExtension": "png",
+            "data": "database",
+            "fileName": "row_id_2554-4.png",
+            "id": "database:5843fc91-adcc-43ed-a689-5537ed136b61",
+            "fileSize": "224 kB"
+          }
+        }
+      }
+    ],
+    "CloudConvert1": [
+      {
+        "json": {},
+        "binary": {
+          "data": {
+            "mimeType": "image/png",
+            "fileType": "image",
+            "fileExtension": "png",
+            "data": "database",
+            "fileName": "row_id_2554-1.png",
+            "id": "database:b4e1e7f3-11cd-48ed-992d-ea191c577685",
+            "fileSize": "886 kB"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {},
+        "binary": {
+          "data": {
+            "mimeType": "image/png",
+            "fileType": "image",
+            "fileExtension": "png",
+            "data": "database",
+            "fileName": "row_id_2554-2.png",
+            "id": "database:272fce0b-dd3b-4cee-aca9-8cc98d6dbe86",
+            "fileSize": "1.15 MB"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {},
+        "binary": {
+          "data": {
+            "mimeType": "image/png",
+            "fileType": "image",
+            "fileExtension": "png",
+            "data": "database",
+            "fileName": "row_id_2554-3.png",
+            "id": "database:ce3c403c-423a-4362-aef5-bbeede8f8972",
+            "fileSize": "1.13 MB"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {},
+        "binary": {
+          "data": {
+            "mimeType": "image/png",
+            "fileType": "image",
+            "fileExtension": "png",
+            "data": "database",
+            "fileName": "row_id_2554-4.png",
+            "id": "database:5843fc91-adcc-43ed-a689-5537ed136b61",
+            "fileSize": "224 kB"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Download PDF1": [
+      {
+        "json": {
+          "body_installer_form_pdf_url": "https://api.fillout.com/v1/files/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJtaXNzaW9uSWQiOiIyODZjZTZhMS0wMGVkLTQ3YTgtOWUwZC1lZGY2Yzk4YTZiNDUiLCJkb2N1bWVudElkIjoiNGY3Yzg1ZmQtZGUwMi00MWUxLThhYjMtNTIzMDFkYTU2NjAwIiwiZmxvd1B1YmxpY0lkZW50aWZpZXIiOiI4UnBOcXdneXh3dXMiLCJtb2RlIjoibGl2ZSIsImlhdCI6MTc3MjYzNjQxMX0.FKvxAkaBbfrrwt_J0P6v5zP7gwPYEE2Ep08b8pgAOkc",
+          "body_completed_installation_date_firstItem": "2026-03-04T15:00:00.000Z",
+          "body_customer_name_firstItem": "Joao Paulo Da Mota Mendes",
+          "body_mount_type_firstItem": "Wall Mount (Pared)",
+          "body_order_id_firstItem": "ES-RE-1772550833221",
+          "body_firstItem": {
+            "customer_name": "Joao Paulo Da Mota Mendes",
+            "installer_form_pdf": {
+              "filename": "row_id_2554.pdf",
+              "url": "https://api.fillout.com/v1/files/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJtaXNzaW9uSWQiOiIyODZjZTZhMS0wMGVkLTQ3YTgtOWUwZC1lZGY2Yzk4YTZiNDUiLCJkb2N1bWVudElkIjoiNGY3Yzg1ZmQtZGUwMi00MWUxLThhYjMtNTIzMDFkYTU2NjAwIiwiZmxvd1B1YmxpY0lkZW50aWZpZXIiOiI4UnBOcXdneXh3dXMiLCJtb2RlIjoibGl2ZSIsImlhdCI6MTc3MjYzNjQxMX0.FKvxAkaBbfrrwt_J0P6v5zP7gwPYEE2Ep08b8pgAOkc"
+            },
+            "mount_type": "Wall Mount (Pared)",
+            "row_id": "2554",
+            "order_id": "ES-RE-1772550833221",
+            "submission_id": "286ce6a1-00ed-47a8-9e0d-edf6c98a6b45",
+            "current_location_latitude": "42.73603",
+            "current_location_longitude": "-2.6406767",
+            "edit_form": "False",
+            "completed_installation_date": "2026-03-04T15:00:00.000Z",
+            "additional_expenses_value": null,
+            "additional_expenses": "NO",
+            "additional_expenses_info": "",
+            "\u00bfQu\u00e9 cable has utilizado?": "Cable de 15m del cliente (incluido en el kit)\n"
+          }
+        },
+        "binary": {
+          "data": {
+            "mimeType": "application/pdf",
+            "fileType": "pdf",
+            "fileExtension": "pdf",
+            "data": "database",
+            "directory": "https://api.fillout.com/v1/files/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJtaXNzaW9uSWQiOiIyODZjZTZhMS0wMGVkLTQ3YTgtOWUwZC1lZGY2Yzk4YTZiNDUiLCJkb2N1bWVudElkIjoiNGY3Yzg1ZmQtZGUwMi00MWUxLThhYjMtNTIzMDFkYTU2NjAwIiwiZmxvd1B1YmxpY0lkZW50aWZpZXIiOiI4UnBOcXdneXh3dXMiLCJtb2RlIjoibGl2ZSIsImlhdCI6MTc3MjYzNjQxMX0.FKvxAkaBbfrrwt_J0P6v5zP7gwPYEE2Ep08b8pgAOkc",
+            "fileName": "row_id_2554.pdf",
+            "id": "database:633f13be-ad27-458e-a0a0-ca7454d97335",
+            "fileSize": "5.91 MB"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "5be68eac-fd37-4379-ab17-2223852eb4c4",
+  "activeVersionId": "cb388d16-289b-4ad8-9ae1-805ddf774a02",
+  "versionCounter": 14,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T14:45:17.085Z",
+      "createdAt": "2026-02-26T14:45:17.085Z",
+      "role": "workflow:owner",
+      "workflowId": "4eIumbJijQkVbU55",
+      "projectId": "kOrFHzUSBypKuj0y",
+      "project": {
+        "updatedAt": "2026-01-07T11:50:47.296Z",
+        "createdAt": "2025-08-05T13:18:06.805Z",
+        "id": "kOrFHzUSBypKuj0y",
+        "name": "Informatica Eltex <informatica@eltex.es>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "ec300e58-6ced-4063-a29b-eafa14d77da9",
+        "projectRelations": [
+          {
+            "updatedAt": "2025-08-05T13:18:06.805Z",
+            "createdAt": "2025-08-05T13:18:06.805Z",
+            "userId": "ec300e58-6ced-4063-a29b-eafa14d77da9",
+            "projectId": "kOrFHzUSBypKuj0y",
+            "user": {
+              "updatedAt": "2026-03-04T12:03:16.704Z",
+              "createdAt": "2025-08-05T13:18:05.167Z",
+              "id": "ec300e58-6ced-4063-a29b-eafa14d77da9",
+              "email": "informatica@eltex.es",
+              "firstName": "Informatica",
+              "lastName": "Eltex",
+              "personalizationAnswers": {
+                "version": "v4",
+                "personalization_survey_submitted_at": "2025-08-06T06:34:29.797Z",
+                "personalization_survey_n8n_version": "1.105.3"
+              },
+              "settings": {
+                "userActivated": true,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "JgDirscNRKEbm214",
+                "userActivatedAt": 1759830580977,
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1771859111838
+                },
+                "dismissedCallouts": {
+                  "ragStarterCallout": true,
+                  "preBuiltAgentsCalloutHttpRequest": true
+                }
+              },
+              "disabled": false,
+              "mfaEnabled": false,
+              "lastActiveAt": "2026-03-04",
+              "isPending": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-03-04T14:31:01.594Z",
+    "createdAt": "2026-03-04T14:30:58.926Z",
+    "versionId": "cb388d16-289b-4ad8-9ae1-805ddf774a02",
+    "workflowId": "4eIumbJijQkVbU55",
+    "nodes": [
+      {
+        "parameters": {
+          "model": "google/gemini-3-flash-preview",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+        "typeVersion": 1,
+        "position": [
+          -864,
+          1152
+        ],
+        "id": "33b41fef-1be2-416f-816f-0693d34d5bb3",
+        "name": "OpenRouter Chat Model1",
+        "credentials": {
+          "openRouterApi": {
+            "id": "uVnf40HmiF8SxerX",
+            "name": "OpenRouter account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "create",
+          "databaseId": 170,
+          "tableId": 814,
+          "fieldsUi": {
+            "fieldValues": [
+              {
+                "fieldId": 8388,
+                "fieldValue": "={{ [Number($json.metadata.row_id)] }}"
+              },
+              {
+                "fieldId": 8376,
+                "fieldValue": "={{ $json.validation.status }}"
+              },
+              {
+                "fieldId": 8377,
+                "fieldValue": "={{ $json.validation.outcome }}"
+              },
+              {
+                "fieldId": 8378,
+                "fieldValue": "={{ $json.validation.total_score }}"
+              },
+              {
+                "fieldId": 8379,
+                "fieldValue": "={{ $json.validation.safety_passed }}"
+              },
+              {
+                "fieldId": 8382,
+                "fieldValue": "={{ $json.validation.missing_evidence.join('\\n') }}"
+              },
+              {
+                "fieldId": 8383,
+                "fieldValue": "={{ $json.validation.category_scores.installation_execution }}"
+              },
+              {
+                "fieldId": 8384,
+                "fieldValue": "={{ $json.validation.category_scores.site_condition }}"
+              },
+              {
+                "fieldId": 8385,
+                "fieldValue": "={{ $json.validation.category_scores.documentation }}"
+              },
+              {
+                "fieldId": 8386,
+                "fieldValue": "={{ $json.validation.category_scores.customer_education }}"
+              },
+              {
+                "fieldId": 8387,
+                "fieldValue": "={{ $json.validation.summary }}"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.baserow",
+        "typeVersion": 1,
+        "position": [
+          -352,
+          928
+        ],
+        "id": "0733158c-e92c-43ae-af27-22d1bbeb7430",
+        "name": "Save to Baserow",
+        "credentials": {
+          "baserowApi": {
+            "id": "YrKCm27IDyFcgBzd",
+            "name": "Baserow account (spain)"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.body_installer_form_pdf_url }}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          -1600,
+          928
+        ],
+        "id": "f28028f5-f967-462e-b060-e07e8a8403ff",
+        "name": "Download PDF1"
+      },
+      {
+        "parameters": {
+          "outputFormat": "png",
+          "additionalOptions": "="
+        },
+        "type": "@cloudconvert/n8n-nodes-cloudconvert.cloudConvert",
+        "typeVersion": 1,
+        "position": [
+          -1376,
+          928
+        ],
+        "id": "48547144-44ff-4bb2-a79f-75e7837776d9",
+        "name": "CloudConvert1",
+        "retryOnFail": true,
+        "waitBetweenTries": 5000,
+        "credentials": {
+          "cloudConvertOAuth2Api": {
+            "id": "3Sv7GJewBRUIjwXC",
+            "name": "CloudConvert account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Grab all items output by CloudConvert\nconst items = $input.all();\n\n// Create a single item to hold everything, keeping the original webhook JSON\nconst mergedItem = {\n  json: items[0].json,\n  binary: {}\n};\n\n// Loop through the items and attach each image as a new property\nitems.forEach((item, index) => {\n  if (item.binary && item.binary.data) {\n    mergedItem.binary[`page_${index + 1}`] = item.binary.data;\n  }\n});\n\n// Return exactly one item containing all pages\nreturn [mergedItem];"
+        },
+        "id": "c00d051e-259d-4420-9176-ef6eb902261f",
+        "name": "Merge Pages1",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1152,
+          928
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "===Eres un Validador Experto en Control de Calidad (QA) para Instalaciones de Starlink. \n\n## METADATOS DEL SISTEMA:\n- Nombre del Cliente: {{ $('Start').first().json.body_customer_name_firstItem }}\n- ID del Pedido: {{ $('Start').first().json.body_order_id_firstItem }}\n- Tipo de Soporte (Mount): {{ $('Start').first().json.body_mount_type_firstItem }}\n- Fecha de Instalaci\u00f3n: {{ $('Start').first().json.body_completed_installation_date_firstItem }}\n- Cable Utilizado: {{ $('Start').first().json.body_firstItem['\u00bfQu\u00e9 cable has utilizado?'] }}\n\n## R\u00daBRICA E INSTRUCCIONES:\nEval\u00faa las im\u00e1genes y/o p\u00e1ginas del PDF adjuntas utilizando la siguiente r\u00fabrica detallada:\n\n1. Seguridad (Pasa / Falla): Verifica la estabilidad estructural del montaje y que el enrutamiento del cableado sea seguro. Cualquier riesgo de seguridad detectado significa un fallo autom\u00e1tico.\n2. Ejecuci\u00f3n de la Instalaci\u00f3n (15 pts): La antena est\u00e1 montada de forma segura, correctamente alineada y la instalaci\u00f3n f\u00edsica est\u00e1 terminada.\n3. Condici\u00f3n del Sitio (10 pts): Limpieza del \u00e1rea de trabajo (5 pts) y evidencia de respeto por la propiedad del cliente (5 pts).\n4. Documentaci\u00f3n (15 pts): Se han enviado todas las fotograf\u00edas requeridas (10 pts) y las notas describen el trabajo con precisi\u00f3n (5 pts).\n5. Educaci\u00f3n del Cliente (10 pts): Evidencia de captura de pantalla del Test de Velocidad (5 pts) y Visor de Obstrucciones (5 pts).\n6. Autenticidad (Pasa / Falla): Comprueba si las fotos parecen genuinas, sin alteraciones. Un fallo aqu\u00ed es rechazo autom\u00e1tico.\n\n## EVALUACI\u00d3N Y RESULTADO:\nCalcula la Puntuaci\u00f3n Total (Sobre un m\u00e1ximo de 50 puntos). \nDetermina el Resultado de Acci\u00f3n bas\u00e1ndote en la puntuaci\u00f3n:\n- 45-50: Aprobado - Excelente\n- 40-44: Aprobado - Monitorizar\n- 35-39: En Riesgo\n- <35 o Falla de Seguridad o Autenticidad: Rechazado\n\n## REGLA ESTRICTA PARA EL RESUMEN (SUMMARY):\nEl campo \"summary\" alimentar\u00e1 la secci\u00f3n \"Resumen de IA\" en nuestra base de datos.\n- Si la instalaci\u00f3n es PERFECTA (50/50): Solo da un breve resumen positivo (ej. \"Instalaci\u00f3n perfecta, cumple todos los est\u00e1ndares.\")\n- Si la instalaci\u00f3n FALLA, EST\u00c1 EN RIESGO, o PIERDE PUNTOS: Debes ser DIRECTO Y ACCIONABLE. Empieza diciendo qu\u00e9 fall\u00f3, y luego a\u00f1ade obligatoriamente una secci\u00f3n llamada \"ACCIONES REQUERIDAS:\" listando paso a paso (reiteration steps) qu\u00e9 debe hacer exactamente el instalador para arreglarlo y qu\u00e9 evidencia nueva debe subir.\n\n## FORMATO EXACTO DE SALIDA JSON:\nDebes devolver el resultado usando estrictamente esta estructura JSON. Escribe todos los textos din\u00e1micos en ESPA\u00d1OL.\n\n{\n  \"status\": \"APROBADO\" o \"RECHAZADO\",\n  \"outcome\": \"<Inserta aqu\u00ed la categor\u00eda de resultado obtenida arriba>\",\n  \"total_score\": <n\u00famero entero 0-50>,\n  \"safety_passed\": true/false,\n  \"category_scores\": {\n    \"installation_execution\": <n\u00famero 0-15>,\n    \"site_condition\": <n\u00famero 0-10>,\n    \"documentation\": <n\u00famero 0-15>,\n    \"customer_education\": <n\u00famero 0-10>\n  },\n  \"missing_evidence\": [\n    \"Lista en espa\u00f1ol qu\u00e9 fotos faltan, o un array vac\u00edo si no falta nada\"\n  ],\n  \"summary\": \"Si es perfecto: resumen positivo. Si falla o pierde puntos: Explica el error + 'ACCIONES REQUERIDAS: [Lista de pasos para que el instalador lo solucione y fotos nuevas que debe enviar]'\"\n}",
+          "options": {
+            "systemMessage": "You are a strict but fair Quality Assurance AI. Always respond with perfectly formatted JSON only.",
+            "passthroughBinaryImages": true
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          -928,
+          928
+        ],
+        "id": "93760247-5468-4653-aa7d-c65a1b1a8e3a",
+        "name": "AI Agent - Validate PDF",
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "jsCode": "// Parse the AI response and extract validation result\nconst aiResponse = $input.first().json.output || $input.first().json.text || '';\n\nconst webhookData = $('Start').first().json.body_firstItem;\n\nlet validationResult;\ntry {\n  // Try to find JSON in the response\n  const jsonMatch = aiResponse.match(/```json\\s*([\\s\\S]*?)```/) || aiResponse.match(/(\\{[\\s\\S]*\\})/);\n  \n  if (jsonMatch) {\n    const jsonStr = jsonMatch[1] || jsonMatch[0];\n    validationResult = JSON.parse(jsonStr);\n  } else {\n    // If no JSON found, try parsing the whole response\n    validationResult = JSON.parse(aiResponse);\n  }\n} catch (e) {\n  // Fallback if parsing fails\n  validationResult = {\n    status: \"ERROR\",\n    outcome: \"Parsing Error\",\n    total_score: 0,\n    safety_passed: false,\n    category_scores: {},\n    missing_evidence: [\"Unable to parse AI response\"],\n    summary: \"Validation could not be completed due to parsing error\"\n  };\n}\n\n// Add metadata to the result\nreturn {\n  json: {\n    validation: validationResult,\n    metadata: {\n      order_id: webhookData.order_id,\n      customer_name: webhookData.customer_name,\n      submission_id: webhookData.submission_id,\n      row_id: webhookData.row_id,\n      pdf_filename: webhookData.installer_form_pdf?.filename,\n      validated_at: new Date().toISOString()\n    },\n    // IMPORTANT: Checking for APROBADO instead of PASS\n    passed: validationResult.status === 'APROBADO',\n    raw_ai_response: aiResponse\n  }\n};"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -576,
+          928
+        ],
+        "id": "aa434151-0b6c-48fb-a55f-6a3a574421d3",
+        "name": "Parse AI Result1"
+      },
+      {
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "body_installer_form_pdf_url",
+                "type": "any"
+              },
+              {
+                "name": "body_completed_installation_date_firstItem",
+                "type": "any"
+              },
+              {
+                "name": "body_customer_name_firstItem",
+                "type": "any"
+              },
+              {
+                "name": "body_mount_type_firstItem",
+                "type": "any"
+              },
+              {
+                "name": "body_order_id_firstItem",
+                "type": "any"
+              },
+              {
+                "name": "body_firstItem",
+                "type": "any"
+              }
+            ]
+          }
+        },
+        "id": "47cedb07-d8a9-4d80-aa63-88a405d85c13",
+        "typeVersion": 1.1,
+        "name": "Start",
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "position": [
+          -1808,
+          928
+        ]
+      }
+    ],
+    "connections": {
+      "Save to Baserow": {
+        "main": [
+          []
+        ]
+      },
+      "Download PDF1": {
+        "main": [
+          [
+            {
+              "node": "CloudConvert1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenRouter Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent - Validate PDF",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "CloudConvert1": {
+        "main": [
+          [
+            {
+              "node": "Merge Pages1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge Pages1": {
+        "main": [
+          [
+            {
+              "node": "AI Agent - Validate PDF",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent - Validate PDF": {
+        "main": [
+          [
+            {
+              "node": "Parse AI Result1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse AI Result1": {
+        "main": [
+          [
+            {
+              "node": "Save to Baserow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Start": {
+        "main": [
+          [
+            {
+              "node": "Download PDF1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Informatica Eltex",
+    "name": "Version cb388d16",
+    "description": "",
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-03-04T14:31:01.550Z",
+        "id": 216,
+        "workflowId": "4eIumbJijQkVbU55",
+        "versionId": "cb388d16-289b-4ad8-9ae1-805ddf774a02",
+        "event": "activated",
+        "userId": "ec300e58-6ced-4063-a29b-eafa14d77da9"
+      }
+    ]
+  }
+}
