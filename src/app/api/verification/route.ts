@@ -34,16 +34,28 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ found: false });
   }
 
-  // Optionally fetch edit URL from table 640
   let editUrl: string | null = null;
+  const fallbackUrl = `https://forms.starlink.eltex.es/t/8RpNqwgyxwus?row_id=${rowId}&edit_form=True`;
+
   try {
     const r2 = await fetch(`${BASEROW}/table/640/${rowId}/?user_field_names=true`, { headers });
     if (r2.ok) {
       const d2 = await r2.json();
-      editUrl = d2['URL FillOut Instalación'] ?? null;
+      const fetchedUrl = d2['URL FillOut Instalación'];
+      if (fetchedUrl) {
+        if (fetchedUrl.includes('?')) {
+          editUrl = fetchedUrl + '&edit_form=True';
+        } else {
+          editUrl = fetchedUrl + '?edit_form=True';
+        }
+      } else {
+        editUrl = fallbackUrl;
+      }
+    } else {
+      editUrl = fallbackUrl;
     }
   } catch {
-    // ignore
+    editUrl = fallbackUrl;
   }
 
   return NextResponse.json({ found: true, row, editUrl });
