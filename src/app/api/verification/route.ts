@@ -71,7 +71,9 @@ export async function GET(req: NextRequest) {
       if (starlinkId) params.append('starlink_id', starlinkId);
 
       if (fetchedUrl && fetchedUrl.includes('_t=')) {
-        editUrl = fetchedUrl + (fetchedUrl.includes('?') ? '&' : '?') + 'edit_form=True';
+        // Use the pre-filled URL (with _t token) but still append all the params
+        const extraParams = params.toString(); // already includes edit_form, row_id, etc.
+        editUrl = fetchedUrl + (fetchedUrl.includes('?') ? '&' : '?') + extraParams;
       } else {
         editUrl = `https://forms.starlink.eltex.es/t/8RpNqwgyxwus?${params.toString()}`;
       }
